@@ -1,0 +1,7 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+.swiftpm
+.aoc-session
+Sources/Day*/*Input.swift
