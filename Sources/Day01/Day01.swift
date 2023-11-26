@@ -9,7 +9,8 @@ import AoCTools
 final class Day01: AOCDay {
     
     init(input: String?) {
-        // let input = input ?? Self.input
+        let input = input ?? Self.input
+        print(input)
     }
 
     func part1() -> Int {

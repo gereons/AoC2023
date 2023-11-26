@@ -9,7 +9,7 @@ All code for all days is compiled into a single macOS commandline binary, which 
 Each day has at least 3 associated source files: 
 
 * `DayX.swift` for the solution code
-* `DayX+Input.swift` for the puzzle input. This file is created by running the included `input.sh` script
+* `DayX+Input.swift` for the puzzle input. This file is created by running the included `input.sh` script but is not included in this repo for [legal reasons](https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs).
 * `DayXTests.swift` for the test suite, if the puzzle has test cases
 
 `AoC.swift` has the `main()` function which simply runs one (or all) of the puzzles.
