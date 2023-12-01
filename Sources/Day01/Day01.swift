@@ -7,17 +7,57 @@
 import AoCTools
 
 final class Day01: AOCDay {
-    
+    let lines: [String]
+
     init(input: String?) {
-        let input = input ?? Self.input
-        print(input)
+        lines = (input ?? Self.input).lines
     }
 
     func part1() -> Int {
-        return 0
+        lines.reduce(0) { acc, line in
+            let chars = line.map { $0 }
+            let first = chars.first { $0.isNumber }!
+            let last = chars.last { $0.isNumber }!
+            return acc + Int(String(first))! * 10 + Int(String(last))!
+        }
     }
 
     func part2() -> Int {
-        return 0
+        lines.reduce(0) { acc, line in
+            let first = firstNumber(in: line)
+            let last = lastNumber(in: line)
+            return acc + first * 10 + last
+        }
+    }
+
+    private let search = [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+        "1", "2", "3", "4", "5", "6", "7", "8", "9"
+    ]
+
+    private func firstNumber(in line: String) -> Int {
+        var minIndex = Int.max
+        var value = 0
+        for (strIndex, str) in search.enumerated() {
+            if let index = line.indexOf(str), index < minIndex {
+                minIndex = index
+                value = strIndex + 1
+            }
+        }
+        if value > 9 { value -= 9 }
+        return value
+    }
+
+    private func lastNumber(in line: String) -> Int {
+        var maxIndex = Int.min
+        var value = 0
+        for (strIndex, str) in search.enumerated() {
+            if let index = line.indicesOf(str).last, index > maxIndex {
+                maxIndex = index
+                value = strIndex + 1
+            }
+        }
+        if value > 9 { value -= 9 }
+        return value
     }
 }
