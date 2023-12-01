@@ -15,10 +15,8 @@ final class Day01: AOCDay {
 
     func part1() -> Int {
         lines.reduce(0) { acc, line in
-            let chars = line.map { $0 }
-            let first = chars.first { $0.isNumber }!
-            let last = chars.last { $0.isNumber }!
-            return acc + Int(String(first))! * 10 + Int(String(last))!
+            let digits = line.map { $0 }.compactMap { Int(String($0)) }
+            return acc + digits.first! * 10 + digits.last!
         }
     }
 
@@ -58,7 +56,6 @@ final class Day01: AOCDay {
                 if index == line.count - str.count { break }
             }
         }
-        
         return value > 9 ? value - 9 : value
     }
 }
