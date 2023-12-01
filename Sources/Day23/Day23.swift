@@ -8,7 +8,7 @@ import AoCTools
 
 final class Day23: AOCDay {
     
-    init(input: String?) {
+    init(input: String) {
         // let input = input ?? Self.input
     }
 

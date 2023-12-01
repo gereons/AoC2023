@@ -38,11 +38,12 @@ struct AdventOfCode {
     private static func run(_ day: Day) {
         switch day {
         case .all:
-            days.forEach { day in
-                day.init(input: nil).run()
+            for day in days {
+                day.init(input: day.input).run()
             }
         case .day(let day):
-            days[day-1].init(input: nil).run()
+            let day = days[day - 1]
+            day.init(input: day.input).run()
         }
     }
 
