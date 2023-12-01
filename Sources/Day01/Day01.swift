@@ -33,29 +33,35 @@ final class Day01: AOCDay {
         "1", "2", "3", "4", "5", "6", "7", "8", "9"
     ]
 
+    private func valueFor(_ index: Int) -> Int {
+        index < 9 ? index + 1 : index - 8
+    }
+
     private func firstNumber(in line: String) -> Int {
-        var minIndex = Int.max
-        var value = 0
-        for (strIndex, str) in search.enumerated() {
-            if let index = line.indexOf(str), index < minIndex {
-                minIndex = index
-                value = strIndex + 1
-                if index == 0 { break }
+        var line = line
+
+        while !line.isEmpty {
+            for (index, str) in search.enumerated() {
+                if line.hasPrefix(str) {
+                    return valueFor(index)
+                }
             }
+            line.removeFirst()
         }
-        return value > 9 ? value - 9 : value
+        fatalError()
     }
 
     private func lastNumber(in line: String) -> Int {
-        var maxIndex = Int.min
-        var value = 0
-        for (strIndex, str) in search.enumerated() {
-            if let index = line.lastIndexOf(str), index > maxIndex {
-                maxIndex = index
-                value = strIndex + 1
-                if index == line.count - str.count { break }
+        var line = line
+
+        while !line.isEmpty {
+            for (index, str) in search.enumerated() {
+                if line.hasSuffix(str) {
+                    return valueFor(index)
+                }
             }
+            line.removeLast()
         }
-        return value > 9 ? value - 9 : value
+        fatalError()
     }
 }
