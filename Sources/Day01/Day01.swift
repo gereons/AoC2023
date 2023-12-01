@@ -42,22 +42,23 @@ final class Day01: AOCDay {
             if let index = line.indexOf(str), index < minIndex {
                 minIndex = index
                 value = strIndex + 1
+                if index == 0 { break }
             }
         }
-        if value > 9 { value -= 9 }
-        return value
+        return value > 9 ? value - 9 : value
     }
 
     private func lastNumber(in line: String) -> Int {
         var maxIndex = Int.min
         var value = 0
         for (strIndex, str) in search.enumerated() {
-            if let index = line.indicesOf(str).last, index > maxIndex {
+            if let index = line.lastIndexOf(str), index > maxIndex {
                 maxIndex = index
                 value = strIndex + 1
+                if index == line.count - str.count { break }
             }
         }
-        if value > 9 { value -= 9 }
-        return value
+        
+        return value > 9 ? value - 9 : value
     }
 }
