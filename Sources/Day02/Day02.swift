@@ -18,6 +18,10 @@ struct Game {
         var power: Int {
             max(red, 1) * max(green, 1) * max(blue, 1)
         }
+
+        var isPossible: Bool {
+            red <= 12 && green <= 13 && blue <= 14
+        }
     }
 
     init(_ str: String) {
@@ -43,19 +47,15 @@ struct Game {
     }
 
     var isPossible: Bool {
-        sets.allSatisfy {
-            $0.red <= 12 && $0.green <= 13 && $0.blue <= 14
-        }
+        sets.allSatisfy { $0.isPossible }
     }
 
     var minimumSet: Set {
-        var red = 0, green = 0, blue = 0
-        sets.forEach {
-            red = max(red, $0.red)
-            green = max(green, $0.green)
-            blue = max(blue, $0.blue)
-        }
-        return Set(red: red, green: green, blue: blue)
+        Set(
+            red: sets.max(of: \.red) ?? 0,
+            green: sets.max(of: \.green) ?? 0,
+            blue: sets.max(of: \.blue) ?? 0
+        )
     }
 }
 
