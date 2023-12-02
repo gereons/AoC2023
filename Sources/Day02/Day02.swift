@@ -10,10 +10,29 @@ struct Game {
     let id: Int
     let sets: [Set]
 
-    struct Set {
-        let red: Int
-        let green: Int
-        let blue: Int
+    class Set {
+        var red = 0
+        var green = 0
+        var blue = 0
+
+        init(red: Int, green: Int, blue: Int) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+        }
+
+        init(_ string: String) {
+            for color in string.components(separatedBy: ",") {
+                let s = color.trimmed().components(separatedBy: " ")
+                let value = Int(s[0])!
+                switch s[1] {
+                case "red": self.red = value
+                case "green": self.green = value
+                case "blue": self.blue = value
+                default: fatalError()
+                }
+            }
+        }
 
         var power: Int {
             max(red, 1) * max(green, 1) * max(blue, 1)
@@ -27,23 +46,7 @@ struct Game {
     init(_ str: String) {
         let parts = str.components(separatedBy: ": ")
         self.id = Int(String(parts[0].dropFirst(5)))!
-        var gameSets = [Set]()
-        let sets = parts[1].components(separatedBy: ";")
-        for set in sets {
-            let colors = set.components(separatedBy: ",").map { $0.trimmed() }
-            var red = 0, green = 0, blue = 0
-            for c in colors {
-                let s = c.components(separatedBy: " ")
-                switch s[1] {
-                case "red": red = Int(s[0])!
-                case "green": green = Int(s[0])!
-                case "blue": blue = Int(s[0])!
-                default: fatalError()
-                }
-            }
-            gameSets.append(Set(red: red, green: green, blue: blue))
-        }
-        self.sets = gameSets
+        self.sets = parts[1].components(separatedBy: ";").map { Set($0) }
     }
 
     var isPossible: Bool {
