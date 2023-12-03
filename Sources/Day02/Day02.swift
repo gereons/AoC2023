@@ -10,7 +10,7 @@ struct Game {
     let id: Int
     let sets: [Set]
 
-    class Set {
+    struct Set {
         var red = 0
         var green = 0
         var blue = 0
@@ -70,7 +70,7 @@ final class Day02: AOCDay {
     }
 
     func part1() -> Int {
-        games.filter { $0.isPossible }.reduce(0) { $0 + $1.id }
+        games.filter { $0.isPossible }.map { $0.id }.reduce(0, +)
     }
 
     func part2() -> Int {

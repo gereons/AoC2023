@@ -15,7 +15,7 @@ final class Day01: AOCDay {
 
     func part1() -> Int {
         lines.reduce(0) { acc, line in
-            let digits = line.map { $0 }.compactMap { Int(String($0)) }
+            let digits = line.map { $0 }.compactMap { $0.wholeNumberValue }
             return acc + digits.first! * 10 + digits.last!
         }
     }
