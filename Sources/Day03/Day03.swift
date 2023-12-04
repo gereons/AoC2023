@@ -77,7 +77,7 @@ final class Day03: AOCDay {
     func part1() -> Int {
         numbers
             .filter { !symbols.intersection($0.neighbors).isEmpty }
-            .map { $0.value }
+            .map(\.value)
             .reduce(0, +)
     }
 
@@ -88,7 +88,7 @@ final class Day03: AOCDay {
             }
             .filter { $0.count == 2 }
             .map { number in
-                number.map { $0.value }.reduce(1, *)
+                number.map(\.value).reduce(1, *)
             }
             .reduce(0, +)
     }

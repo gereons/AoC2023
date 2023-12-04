@@ -33,7 +33,7 @@ final class Day04: AOCDay {
     }
 
     func part1() -> Int {
-        cards.map { $0.points }.reduce(0, +)
+        cards.map(\.points).reduce(0, +)
     }
 
     func part2() -> Int {

@@ -70,10 +70,10 @@ final class Day02: AOCDay {
     }
 
     func part1() -> Int {
-        games.filter { $0.isPossible }.map { $0.id }.reduce(0, +)
+        games.filter { $0.isPossible }.map(\.id).reduce(0, +)
     }
 
     func part2() -> Int {
-        games.map { $0.minimumSet.power }.reduce(0, +)
+        games.map(\.minimumSet.power).reduce(0, +)
     }
 }
