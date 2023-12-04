@@ -5,24 +5,19 @@
 //
 
 import AoCTools
-import Foundation
 
-struct Card {
+private struct Card {
     let id: Int
-    let winners: Set<Int>
-    let numbers: Set<Int>
+    let matches: Int
 
     init(_ string: String) {
         // Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
         let parts = string.components(separatedBy: ":")
         self.id = parts[0].allInts().first!
-        let numbers = parts[1].components(separatedBy: "|")
-        self.winners = Set(numbers[0].allInts())
-        self.numbers = Set(numbers[1].allInts())
-    }
-
-    var matches: Int {
-        numbers.intersection(winners).count
+        let nums = parts[1].components(separatedBy: "|")
+        let winners = Set(nums[0].allInts())
+        let numbers = Set(nums[1].allInts())
+        matches = numbers.intersection(winners).count
     }
 
     var points: Int {
@@ -31,7 +26,7 @@ struct Card {
 }
 
 final class Day04: AOCDay {
-    let cards: [Card]
+    private let cards: [Card]
 
     init(input: String) {
         cards = input.lines.map { Card($0) }
@@ -46,7 +41,7 @@ final class Day04: AOCDay {
         copies[0] = 0
 
         for card in cards where card.matches > 0 {
-            for i in card.id + 1 ... card.id + card.matches where i < copies.count + 1 {
+            for i in card.id + 1 ... card.id + card.matches {
                 copies[i] += copies[card.id]
             }
         }

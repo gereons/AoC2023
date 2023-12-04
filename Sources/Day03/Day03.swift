@@ -6,7 +6,7 @@
 
 import AoCTools
 
-struct Number: Hashable {
+private struct Number: Hashable {
     let value: Int
     let start: Point
     let length: Int
@@ -27,9 +27,9 @@ struct Number: Hashable {
 }
 
 final class Day03: AOCDay {
-    let symbols: Set<Point>
-    let gears: Set<Point>
-    let numbers: Set<Number>
+    private let symbols: Set<Point>
+    private let gears: Set<Point>
+    private let numbers: Set<Number>
 
     init(input: String) {
         var symbols = Set<Point>()

@@ -6,7 +6,7 @@
 
 import AoCTools
 
-struct Game {
+private struct Game {
     let id: Int
     let sets: [Set]
 
@@ -63,7 +63,7 @@ struct Game {
 }
 
 final class Day02: AOCDay {
-    let games: [Game]
+    private let games: [Game]
 
     init(input: String) {
         games = input.lines.map { Game($0) }
