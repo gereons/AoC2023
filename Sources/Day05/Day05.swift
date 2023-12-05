@@ -22,38 +22,42 @@ private struct Almanac {
         var seed = seed
         for map in maps {
             if let range = map.ranges.first(where: { $0.contains(seed) }) {
-                seed = seed - range.src + range.dest
+                seed += range.adjustment
             }
         }
         return seed
     }
 }
 
-private struct Range {
-    let dest: Int
-    let src: Int
-    let length: Int
-
-    init(_ string: String) {
-        let ints = string.allInts()
-        self.dest = ints[0]
-        self.src = ints[1]
-        self.length = ints[2]
-    }
-
-    func contains(_ x: Int) -> Bool {
-        x >= src && x < (src + length)
-    }
-}
-
 private struct Map {
-    let name: String
     let ranges: [Range]
 
     init(_ lines: [String]) {
-        self.name = lines[0]
-        self.ranges = lines.dropFirst().map { Range($0) }
+        self.ranges = lines.dropFirst().map { Range($0) }.sorted { $0.from < $1.from }
     }
+}
+
+private struct Range {
+    let from: Int
+    let to: Int
+    let adjustment: Int
+
+    init(from: Int, to: Int, adjustment: Int = 0) {
+        self.from = from
+        self.to = to
+        self.adjustment = adjustment
+    }
+
+    init(_ string: String) {
+        let ints = string.allInts()
+        self.init(from: ints[1], to: ints[1] + ints[2] - 1, adjustment: ints[0] - ints[1])
+    }
+
+    func contains(_ x: Int) -> Bool {
+        x >= from && x <= to
+    }
+
+    var isValid: Bool { from <= to }
 }
 
 final class Day05: AOCDay {
@@ -73,6 +77,43 @@ final class Day05: AOCDay {
     }
 
     func part2() -> Int {
+        var ranges = almanac.seeds
+            .chunked(2)
+            .compactMap { Range(from: $0[0], to: $0[0] + $0[1] - 1) }
+
+        for map in almanac.maps {
+            var newRanges = [Range]()
+            for r in ranges {
+                var range = r
+                for mapping in map.ranges {
+                    if range.from < mapping.from {
+                        newRanges.append(Range(from: range.from, 
+                                               to: min(range.to, mapping.from - 1)))
+                        range = Range(from: mapping.from, to: range.to)
+                        if !range.isValid {
+                            break
+                        }
+                    }
+                    if range.from <= mapping.to {
+                        newRanges.append(Range(from: range.from + mapping.adjustment, 
+                                               to: min(range.to, mapping.to) + mapping.adjustment))
+                        range = Range(from: mapping.to + 1, to: range.to)
+                        if !range.isValid {
+                            break
+                        }
+                    }
+                }
+                if range.isValid {
+                    newRanges.append(range)
+                }
+            }
+            ranges = newRanges
+        }
+
+        return ranges.min(of: \.from)!
+    }
+
+    func part2_bruteForce() -> Int {
         let seedRanges = almanac.seeds
             .chunked(2)
             .map { $0[0] ..< $0[0]+$0[1] }
