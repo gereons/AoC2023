@@ -11,14 +11,26 @@ private struct Race {
     let distance: Int
 
     func waysToWin() -> Int {
-        var win = 0
+        var startWinning = 0
+        var endWinning = 0
+
         for press in 1 ..< time {
             let distance = press * (time - press)
             if distance > self.distance {
-                win += 1
+                startWinning = press
+                break
             }
         }
-        return win
+
+        for press in (1 ..< time).reversed() {
+            let distance = press * (time - press)
+            if distance > self.distance {
+                endWinning = press
+                break
+            }
+        }
+
+        return endWinning - startWinning + 1
     }
 }
 
