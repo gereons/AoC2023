@@ -6,7 +6,7 @@
 
 import AoCTools
 
-enum Rank: Int, Comparable {
+private enum Rank: Int, Comparable {
     case highCard
     case pair
     case twoPair
@@ -20,9 +20,12 @@ enum Rank: Int, Comparable {
     }
 }
 
-struct Hand {
+private class Hand {
     let cards: [Character]
     let bid: Int
+
+    private var _rank: Rank?
+    private var _jokerRank: Rank?
 
     init(_ string: String) {
         let parts = string.components(separatedBy: " ")
@@ -31,26 +34,34 @@ struct Hand {
     }
 
     var rank: Rank {
-        var dict = [Character: Int]()
-        for c in cards {
-            dict[c, default: 0] += 1
+        if _rank == nil {
+            _rank = getRank()
         }
+        return _rank!
+    }
 
-        switch dict.count {
-        case 1: return .five
-        case 2: return dict.values.contains(4) ? .four : .fullHouse
-        case 3: return dict.values.contains(3) ? .three : .twoPair
-        case 4: return .pair
-        case 5: return .highCard
+    var jokerRank: Rank {
+        if _jokerRank == nil {
+            _jokerRank = getJokerRank()
+        }
+        return _jokerRank!
+    }
+
+    private func getRank() -> Rank {
+        let dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
+
+        return switch dict.count {
+        case 1: .five
+        case 2: dict.values.contains(4) ? .four : .fullHouse
+        case 3: dict.values.contains(3) ? .three : .twoPair
+        case 4: .pair
+        case 5: .highCard
         default: fatalError()
         }
     }
 
-    var rankJoker: Rank {
-        var dict = [Character: Int]()
-        for c in cards {
-            dict[c, default: 0] += 1
-        }
+    private func getJokerRank() -> Rank {
+        var dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
         let jokers = dict.removeValue(forKey: "J") ?? 0
         let max = dict.values.max() ?? 0
 
@@ -114,7 +125,7 @@ struct Hand {
 
 extension Hand {
     // "J" is Jack -> value 11
-    static let map: [Character: Int] = [
+    private static let map: [Character: Int] = [
         "A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2
     ]
 
@@ -132,18 +143,18 @@ extension Hand {
     }
 
     // "J" is Joker -> value 1
-    static let mapJoker: [Character: Int] = [
+    private static let jokerMap: [Character: Int] = [
         "A": 14, "K": 13, "Q": 12, "J": 1, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2
     ]
 
-    static func compareRankJoker (lhs: Hand, rhs: Hand) -> Bool {
-        if lhs.rankJoker != rhs.rankJoker {
-            return lhs.rankJoker < rhs.rankJoker
+    static func compareJokerRank (lhs: Hand, rhs: Hand) -> Bool {
+        if lhs.jokerRank != rhs.jokerRank {
+            return lhs.jokerRank < rhs.jokerRank
         }
 
         for (c1, c2) in zip(lhs.cards, rhs.cards) {
             if c1 != c2 {
-                return mapJoker[c1]! < mapJoker[c2]!
+                return jokerMap[c1]! < jokerMap[c2]!
             }
         }
         fatalError()
@@ -162,7 +173,7 @@ final class Day07: AOCDay {
     }
 
     func part2() -> Int {
-        sumBids(hands.sorted(by: Hand.compareRankJoker))
+        sumBids(hands.sorted(by: Hand.compareJokerRank))
     }
 
     private func sumBids(_ hands: [Hand]) -> Int {
