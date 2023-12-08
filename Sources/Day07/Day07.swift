@@ -49,7 +49,22 @@ private class Hand {
 
     private func getRank() -> Rank {
         let dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
+        return getRank(for: dict)
+    }
 
+    private func getJokerRank() -> Rank {
+        var dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
+        let jokers = dict.removeValue(forKey: "J") ?? 0
+        let max = dict.values.max() ?? 0
+        if dict.isEmpty {
+            return .five
+        }
+        let entry = dict.first { $0.value == max }!
+        dict[entry.key] = entry.value + jokers
+        return getRank(for: dict)
+    }
+
+    private func getRank(for dict: [Character: Int]) -> Rank {
         return switch dict.count {
         case 1: .five
         case 2: dict.values.contains(4) ? .four : .fullHouse
@@ -57,68 +72,6 @@ private class Hand {
         case 4: .pair
         case 5: .highCard
         default: fatalError()
-        }
-    }
-
-    private func getJokerRank() -> Rank {
-        var dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
-        let jokers = dict.removeValue(forKey: "J") ?? 0
-        let max = dict.values.max() ?? 0
-
-        switch dict.count {
-        case 0:
-            // no cards left -> JJJJJ -> five
-            return .five
-        case 1:
-            // all cards are the same:
-            // 11111 -> five
-            // 1111J -> five
-            // 1111x -> four
-            // 111JJ -> five
-            // 11JJJ -> five
-            // 1JJJJ -> five
-            if jokers == 0 {
-                return max == 4 ? .four : .five
-            }
-            return .five
-        case 2:
-            // two kinds of cards:
-            // 1122J -> FH
-            // 11122 -> FH
-            // 1112J -> 4
-            // 122JJ -> 4
-            // 12JJJ -> 4
-            switch jokers {
-            case 0: 
-                return dict.values.contains(4) ? .four : .fullHouse
-            case 1:
-                switch max {
-                case 3: return jokers == 1 ? .four : .fullHouse
-                case 2: return .fullHouse
-                default: fatalError()
-                }
-            case 2, 3: return .four
-            default: fatalError()
-            }
-        case 3:
-            // three kinds of cards:
-            // 11223 -> 2P
-            // 123JJ -> 3
-            // 1123J -> 3
-            // 11123 -> 3
-            if jokers == 0 {
-                return dict.values.contains(2) ? .twoPair : .three
-            }
-            return .three
-        case 4:
-            // four kinds of cards:
-            // 1234J -> 2
-            // 11234 -> 2
-            return .pair
-        case 5:
-            return .highCard
-        default:
-            fatalError()
         }
     }
 }
