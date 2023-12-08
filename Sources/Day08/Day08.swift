@@ -5,7 +5,6 @@
 //
 
 import AoCTools
-import RegexBuilder
 
 private struct Node: Hashable {
     let name: String
