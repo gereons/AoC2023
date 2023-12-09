@@ -41,9 +41,7 @@ final class Day08: AOCDay {
         let lengths = nodes.map {
             pathLength(for: $0, targetReached: { $0.name.hasSuffix("Z") })
         }
-        return lengths.reduce(into: 1) {
-            $0 = lcm($0, $1)
-        }
+        return lengths.reduce(1) { lcm($0, $1) }
     }
 
     private func pathLength(for node: Node, targetReached: (Node) -> Bool) -> Int {
