@@ -29,7 +29,7 @@ final class Day09: AOCDay {
 
     private func findPrevious(in sequence: [Int]) -> Int {
         let deltas = getDeltas(for: sequence)
-        let first = (0..<deltas.count - 1).reversed().reduce(0) { deltas[$1].first! - $0 }
+        let first = (0..<deltas.count).reversed().reduce(0) { deltas[$1].first! - $0 }
         return sequence.first! - first
     }
 
