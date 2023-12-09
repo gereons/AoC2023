@@ -23,19 +23,13 @@ final class Day09: AOCDay {
 
     private func findNext(in sequence: [Int]) -> Int {
         let deltas = getDeltas(for: sequence)
-        var last = deltas.last!.last!
-        for i in (0 ..< deltas.count - 1).reversed() {
-            last = deltas[i].last! + last
-        }
+        let last = (0..<deltas.count).reduce(0) { $0 + deltas[$1].last! }
         return sequence.last! + last
     }
 
     private func findPrevious(in sequence: [Int]) -> Int {
         let deltas = getDeltas(for: sequence)
-        var first = deltas.last!.first!
-        for i in (0 ..< deltas.count - 1).reversed() {
-            first = deltas[i].first! - first
-        }
+        let first = (0..<deltas.count - 1).reversed().reduce(0) { deltas[$1].first! - $0 }
         return sequence.first! - first
     }
 
@@ -43,7 +37,7 @@ final class Day09: AOCDay {
         var deltas = [[Int]]()
         var seq = sequence
         while true {
-            let delta = seq.adjacentPairs().map { $0.1 - $0.0 }
+            let delta = seq.enumerated().dropFirst().map { $0.element - seq[$0.offset - 1] }
             deltas.append(delta)
             if delta.allSatisfy({ $0 == 0 }) {
                 break
