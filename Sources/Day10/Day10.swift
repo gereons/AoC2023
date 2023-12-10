@@ -27,14 +27,14 @@ final class Day10: AOCDay {
     }
 
     func part1() -> Int {
-        let (field, start) = findStart(in: field)
-        let path = findPath(in: field, from: start)
+        let (field, start, direction) = findStart(in: field)
+        let path = findPath(in: field, from: start, going: direction)
         return path.count / 2
     }
 
     func part2() -> Int {
-        let (field, start) = findStart(in: field)
-        let path = findPath(in: field, from: start)
+        let (field, start, direction) = findStart(in: field)
+        let path = findPath(in: field, from: start, going: direction)
 
         var crossing = 0
         var inside = 0
@@ -65,15 +65,15 @@ final class Day10: AOCDay {
         return inside
     }
 
-    private func findPath(in field: [[Tile]], from start: Point) -> [Point: Int] {
+    private func findPath(in field: [[Tile]], from start: Point, going direction: Direction) -> [Point: Int] {
         var current = start
         var steps = 0
         var path = [current: steps]
-        var lastDirection: Direction?
+        path.reserveCapacity(20000)
+        var direction = direction
         repeat {
-            let direction = chooseDirection(field[current], lastDirection)
+            direction = chooseDirection(for: field[current], going: direction)
             current = current.moved(to: direction)
-            lastDirection = direction
             steps += 1
             path[current] = steps
         } while current != start
@@ -82,20 +82,19 @@ final class Day10: AOCDay {
     }
 
 
-    private func chooseDirection(_ current: Tile, _ lastDirection: Direction?) -> Direction {
+    private func chooseDirection(for current: Tile, going direction: Direction) -> Direction {
         switch current {
-        case .ns: lastDirection == .n ? .n : .s
-        case .ew: lastDirection == .e ? .e : .w
-        case .ne: lastDirection == .s ? .e : .n
-        case .nw: lastDirection == .s ? .w : .n
-        case .sw: lastDirection == .n ? .w : .s
-        case .se: lastDirection == .n ? .e : .s
+        case .ns, .ew: direction
+        case .ne: direction == .s ? .e : .n
+        case .nw: direction == .s ? .w : .n
+        case .sw: direction == .n ? .w : .s
+        case .se: direction == .n ? .e : .s
         case .ground, .start:
             fatalError()
         }
     }
 
-    private func findStart(in field: [[Tile]]) -> ([[Tile]], Point) {
+    private func findStart(in field: [[Tile]]) -> ([[Tile]], Point, Direction) {
         var field = field
         var start = Point.zero
     findStart:
@@ -114,19 +113,19 @@ final class Day10: AOCDay {
         let sSouth = [Tile.ns, Tile.nw, Tile.ne].contains(field[start.moved(to: .s)])
         let sEast = [Tile.nw, Tile.sw, Tile.ew].contains(field[start.moved(to: .e)])
 
-        let startPipe: Tile
+        let (startPipe, startDirection): (Tile, Direction) =
         switch (sNorth, sWest, sSouth, sEast) {
-        case (true, true, false, false): startPipe = .nw
-        case (true, false, true, false): startPipe = .ns
-        case (true, false, false, true): startPipe = .ne
-        case (false, true, true, false): startPipe = .sw
-        case (false, true, false, true): startPipe = .ew
-        case (false, false, true, true): startPipe = .se
+        case (true, true, false, false): (.nw, .n)
+        case (true, false, true, false): (.ns, .n)
+        case (true, false, false, true): (.ne, .n)
+        case (false, true, true, false): (.sw, .w)
+        case (false, true, false, true): (.ew, .w)
+        case (false, false, true, true): (.se, .e)
         default: fatalError()
         }
 
         field[start] = startPipe
-        return (field, start)
+        return (field, start, startDirection)
     }
 }
 
