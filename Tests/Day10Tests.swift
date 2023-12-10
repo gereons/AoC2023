@@ -92,14 +92,14 @@ L7JLJL-JLJLJL--JLJ.L
         XCTAssertEqual(day2b.part2(), 4)
 
         let day2c = Day10(input: testInput2c)
-        XCTAssertEqual(day2a.part2(), 8)
+        XCTAssertEqual(day2c.part2(), 8)
 
         let day2d = Day10(input: testInput2d)
-        XCTAssertEqual(day2a.part2(), 10)
+        XCTAssertEqual(day2d.part2(), 10)
     }
 
     func testDay10_part2_solution() throws {
         let day = Day10(input: Day10.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 451)
     }
 }

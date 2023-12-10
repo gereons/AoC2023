@@ -28,22 +28,59 @@ final class Day10: AOCDay {
 
     func part1() -> Int {
         let (field, start) = findStart(in: field)
+        let path = findPath(in: field, from: start)
+        return path.count / 2
+    }
+
+    func part2() -> Int {
+        let (field, start) = findStart(in: field)
+        let path = findPath(in: field, from: start)
+
+        var crossing = 0
+        var inside = 0
+
+        // apply non-zero winding rule
+        for y in 0 ..< field.count - 1 {
+            for x in 0 ..< field[y].count {
+                let point = Point(x, y)
+                if let steps = path[point] {
+                    if let stepsBelow = path[point.moved(to: .s)] {
+                        // point below is also on path, check for crossing
+                        if stepsBelow == (steps + 1) % path.count {
+                            crossing += 1
+                        }
+                        if steps == (stepsBelow + 1) % path.count {
+                            crossing -= 1
+                        }
+                    }
+                } else {
+                    // point is not on path, it's inside for non-zero crossings
+                    if crossing != 0 {
+                        inside += 1
+                    }
+                }
+            }
+        }
+
+        return inside
+    }
+
+    private func findPath(in field: [[Tile]], from start: Point) -> [Point: Int] {
         var current = start
         var steps = 0
+        var path = [current: steps]
         var lastDirection: Direction?
         repeat {
             let direction = chooseDirection(field[current], lastDirection)
             current = current.moved(to: direction)
             lastDirection = direction
             steps += 1
+            path[current] = steps
         } while current != start
 
-        return steps / 2
+        return path
     }
 
-    func part2() -> Int {
-        return 0
-    }
 
     private func chooseDirection(_ current: Tile, _ lastDirection: Direction?) -> Direction {
         switch current {
