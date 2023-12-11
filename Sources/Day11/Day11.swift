@@ -6,72 +6,73 @@
 
 import AoCTools
 
-private enum Space: Character, Drawable {
-    case empty = "."
-    case galaxy = "#"
-}
-
 final class Day11: AOCDay {
-    private let image: [[Space]]
+    let galaxies: [Point]
 
     init(input: String) {
-        image = input.lines.map {
-            $0.map { Space(rawValue: $0)! }
-        }
-    }
-
-    func part1() -> Int {
-        let image = expand(image)
-
         var galaxies = [Point]()
-        for y in 0..<image.count {
-            for x in 0..<image[y].count {
-                if image[y][x] == .galaxy {
+        for (y, line) in input.lines.enumerated() {
+            for (x, ch) in line.enumerated() {
+                if ch == "#" {
                     galaxies.append(Point(x, y))
                 }
             }
         }
+        self.galaxies = galaxies
+    }
 
-        var total = 0
-        for pair in galaxies.combinations(of: 2) {
-            let distance = pair[0].distance(to: pair[1])
-            total += distance
-        }
-        return total
+    func part1() -> Int {
+        distanceSum(galaxies, growth: 2)
     }
 
     func part2() -> Int {
-        return 0
+        distanceSum(galaxies, growth: 1_000_000)
     }
 
-    private func draw(_ image: [[Space]]) {
-        for y in 0..<image.count {
-            for x in 0..<image[y].count {
-                print(image[y][x].rawValue, terminator: "")
+    func distanceSum(_ galaxies: [Point], growth: Int) -> Int {
+        let galaxies = expand(galaxies, growth: growth)
+
+        return galaxies
+            .combinations(of: 2)
+            .map { pair in
+                pair[0].distance(to: pair[1])
             }
-            print()
-        }
+            .reduce(0, +)
     }
 
-    private func expand(_ image: [[Space]]) -> [[Space]] {
-        var newImage = [[Space]]()
+    private func expand(_ galaxy: [Point], growth: Int) -> [Point] {
+        let minY = galaxy.min(of: \.y)!
+        let maxY = galaxy.max(of: \.y)!
 
-        for y in 0 ..< image.count {
-            newImage.append(image[y])
-            if image[y].allSatisfy({ $0 == .empty }) {
-                newImage.append(image[y])
-            }
-        }
-
-        for x in (0 ..< newImage[0].count).reversed() {
-            if (0 ..< newImage.count).allSatisfy({ newImage[$0][x] == .empty }) {
-                (0 ..< newImage.count).forEach {
-                    newImage[$0].insert(.empty, at: x)
+        var yExpanded = [Point]()
+        var distance = 0
+        for y in minY...maxY {
+            let inRow = galaxy.filter { $0.y == y }
+            if inRow.isEmpty {
+                distance += growth - 1
+            } else {
+                for point in inRow {
+                    yExpanded.append(Point(point.x, point.y + distance))
                 }
             }
         }
 
-        return newImage
+        let minX = yExpanded.min(of: \.x)!
+        let maxX = yExpanded.max(of: \.x)!
+        distance = 0
+        var xExpanded = [Point]()
+        for x in minX...maxX {
+            let inCol = yExpanded.filter { $0.x == x }
+            if inCol.isEmpty {
+                distance += growth - 1
+            } else {
+                for point in inCol {
+                    xExpanded.append(Point(point.x + distance, point.y))
+                }
+            }
+        }
+
+        return xExpanded
     }
 }
 
