@@ -6,13 +6,6 @@
 
 import AoCTools
 
-// ???.### 1,1,3
-// .??..??...?##. 1,1,3
-// ?#?#?#?#?#?#?#? 1,3,1,6
-// ????.#...#... 4,1,1
-// ????.######..#####. 1,6,5
-// ?###???????? 3,2,1
-
 private struct Row {
     let status: [Status]
     let counts: [Int]
@@ -21,6 +14,11 @@ private struct Row {
         let parts = string.components(separatedBy: " ")
         status = parts[0].map { Status(rawValue: $0)! }
         counts = parts[1].allInts()
+    }
+
+    init(status: [Status], counts: [Int]) {
+        self.status = status
+        self.counts = counts
     }
 }
 
@@ -45,33 +43,47 @@ final class Day12: AOCDay {
 
     func part2() -> Int {
         return 0
+//        let rows = self.rows.map { unfold($0) }
+//        return rows
+//            .map { arrangements(for: $0) }
+//            .reduce(0, +)
+    }
+
+    private func unfold(_ row: Row) -> Row {
+        let counts = [[Int]](repeating: row.counts, count: 5)
+            .flatMap { $0 }
+        let status = [[Status]](repeating: row.status, count: 5)
+            .joined(separator: [.unknown])
+            .compactMap { $0 }
+        return Row(status: status, counts: counts)
     }
 
     private func arrangements(for row: Row) -> Int {
+        let totalCount = row.counts.reduce(0, +) - row.status.count { $0 == .broken }
         let unknowns = row.status.filter { $0 == .unknown }
-        let allBits = (0..<(1<<unknowns.count)).map { bits(value: $0, length: unknowns.count) }
+        let allBits = (0..<(1<<unknowns.count))
+            .filter { $0.nonzeroBitCount == totalCount }
+            .map { bits(value: $0, length: unknowns.count) }
 
         var sum = 0
         for bits in allBits {
-            var newStatus = [Status]()
+            var newStatus = row.status
             var bitsIndex = 0
-            for status in row.status {
-                switch status {
-                case .broken, .working: newStatus.append(status)
-                case .unknown:
-                    newStatus.append(bits[bitsIndex] ? .broken : .working)
+            for (index, status) in row.status.enumerated() {
+                if status == .unknown {
+                    newStatus[index] = bits[bitsIndex] ? .broken : .working
                     bitsIndex += 1
                 }
             }
             
-            if brokenCounts(newStatus) == row.counts {
+            if brokenCounts(newStatus, matches: row.counts) {
                 sum += 1
             }
         }
         return sum
     }
 
-    private func brokenCounts(_ row: [Status]) -> [Int] {
+    private func brokenCounts(_ row: [Status], matches: [Int]) -> Bool {
         var result = [Int]()
         var prev = Status.working
         var count = 0
@@ -83,6 +95,9 @@ final class Day12: AOCDay {
                 if st != prev {
                     result.append(count)
                     count = 0
+                    if result[result.count-1] != matches[result.count-1] {
+                        return false
+                    }
                 }
             case .unknown:
                 fatalError()
@@ -92,7 +107,7 @@ final class Day12: AOCDay {
         if count != 0 {
             result.append(count)
         }
-        return result
+        return result == matches
     }
 
     private func bits(value: Int, length: Int) -> [Bool] {
