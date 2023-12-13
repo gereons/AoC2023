@@ -6,26 +6,26 @@
 
 import AoCTools
 
-private struct Row {
-    let status: [Status]
-    let counts: [Int]
+private struct Row: Hashable {
+    let record: String
+    let groups: [Int]
 
     init(_ string: String) {
         let parts = string.components(separatedBy: " ")
-        status = parts[0].map { Status(rawValue: $0)! }
-        counts = parts[1].allInts()
+        record = parts[0]
+        groups = parts[1].allInts()
     }
 
-    init(status: [Status], counts: [Int]) {
-        self.status = status
-        self.counts = counts
+    init<S: StringProtocol>(record: S, groups: [Int]) {
+        self.record = String(record)
+        self.groups = groups
     }
-}
 
-private enum Status: Character {
-    case broken = "#"
-    case working = "."
-    case unknown = "?"
+    var unfolded: Row {
+        let rec = [String](repeating: self.record, count: 5).joined(separator: "?")
+        let groups = [[Int]](repeating: self.groups, count: 5).flatMap { $0 }
+        return Row(record: rec, groups: groups)
+    }
 }
 
 final class Day12: AOCDay {
@@ -37,87 +37,73 @@ final class Day12: AOCDay {
 
     func part1() -> Int {
         rows
-            .map { arrangements(for: $0) }
+            .map { arrangements($0) }
             .reduce(0, +)
     }
 
     func part2() -> Int {
-        return 0
-//        let rows = self.rows.map { unfold($0) }
-//        return rows
-//            .map { arrangements(for: $0) }
-//            .reduce(0, +)
+        rows
+            .map { $0.unfolded }
+            .map { arrangements($0) }
+            .reduce(0, +)
     }
 
-    private func unfold(_ row: Row) -> Row {
-        let counts = [[Int]](repeating: row.counts, count: 5)
-            .flatMap { $0 }
-        let status = [[Status]](repeating: row.status, count: 5)
-            .joined(separator: [.unknown])
-            .compactMap { $0 }
-        return Row(status: status, counts: counts)
+    private var cache = [Row: Int]()
+
+    private func arrangements(_ row: Row) -> Int {
+        if let cached = cache[row] {
+            return cached
+        } else {
+            let value = _arrangements(row)
+            cache[row] = value
+            return value
+        }
     }
 
-    private func arrangements(for row: Row) -> Int {
-        let totalCount = row.counts.reduce(0, +) - row.status.count { $0 == .broken }
-        let unknowns = row.status.filter { $0 == .unknown }
-        let allBits = (0..<(1<<unknowns.count))
-            .filter { $0.nonzeroBitCount == totalCount }
-            .map { bits(value: $0, length: unknowns.count) }
+    private func _arrangements(_ row: Row) -> Int {
+        if row.groups.isEmpty {
+            return row.record.contains("#") ? 0 : 1
+        }
+        if row.record.isEmpty {
+            return 0
+        }
+
+        let ch = row.record.first!
+        let group = row.groups.first!
 
         var sum = 0
-        for bits in allBits {
-            var newStatus = row.status
-            var bitsIndex = 0
-            for (index, status) in row.status.enumerated() {
-                if status == .unknown {
-                    newStatus[index] = bits[bitsIndex] ? .broken : .working
-                    bitsIndex += 1
-                }
-            }
-            
-            if brokenCounts(newStatus, matches: row.counts) {
-                sum += 1
-            }
+        if ch == "#" {
+            sum = pound(row, group)
+        } else if ch == "." {
+            sum = dot(row)
+        } else if ch == "?" {
+            sum = dot(row) + pound(row, group)
         }
+
         return sum
     }
 
-    private func brokenCounts(_ row: [Status], matches: [Int]) -> Bool {
-        var result = [Int]()
-        var prev = Status.working
-        var count = 0
-        for st in row {
-            switch st {
-            case .broken: 
-                count += 1
-            case .working:
-                if st != prev {
-                    result.append(count)
-                    count = 0
-                    if result[result.count-1] != matches[result.count-1] {
-                        return false
-                    }
-                }
-            case .unknown:
-                fatalError()
-            }
-            prev = st
-        }
-        if count != 0 {
-            result.append(count)
-        }
-        return result == matches
+    private func dot(_ row: Row) -> Int {
+        arrangements(Row(record: row.record.dropFirst(), groups: row.groups))
     }
 
-    private func bits(value: Int, length: Int) -> [Bool] {
-        var value = value
-        var bits = [Bool](repeating: false, count: length)
-        for i in (0 ..< length).reversed() {
-            bits[i] = (value & 1) != 0
-            value >>= 1
+    private func pound(_ row: Row, _ group: Int) -> Int {
+        let thisGroup = row.record
+            .prefix(group)
+            .replacingOccurrences(of: "?", with: "#")
+
+        if thisGroup != String(repeating: "#", count: group) {
+            return 0
         }
 
-        return bits
+        if row.record.count == group {
+            return row.groups.count == 1 ? 1 : 0
+        }
+
+        if "?.".contains(row.record.charAt(group)) {
+            return arrangements(Row(record: row.record.dropFirst(group + 1),
+                                    groups: Array(row.groups.dropFirst())))
+        }
+        return 0
     }
 }
