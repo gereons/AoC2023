@@ -6,57 +6,31 @@
 
 import AoCTools
 
-private enum Ground: Character {
-    case ash = "."
-    case rock = "#"
-}
-
-private struct Pattern {
-    let rows: [[Ground]]
+struct Pattern {
+    let straight: [Int]
+    let rotated: [Int]
 
     init(_ lines: [String]) {
-        rows = lines.map { line in
-            line.map { Ground(rawValue: $0)! }
-        }
-    }
+        let rows = lines.count
+        let columns = lines[0].count
 
-    init(rows: [[Ground]]) {
-        self.rows = rows
-    }
+        var straight = [Int](repeating: 0, count: rows)
+        var rotated = [Int](repeating: 0, count: columns)
 
-    func rotated() -> Pattern {
-        let rows = self.rows.count
-        let columns = self.rows[0].count
-
-        let emptyRow = [Ground](repeating: .ash, count: rows)
-        var result = [[Ground]](repeating: emptyRow, count: columns)
-
-        for (y, row) in self.rows.enumerated() {
-            for (x, value) in row.enumerated() {
-                result[x][y] = value
+        for (y, line) in lines.enumerated() {
+            for (x, ch) in line.reversed().enumerated() where ch == "#" {
+                straight[y] += (1 << x)
+                rotated[x] += (1 << y)
             }
         }
 
-        return Pattern(rows: result)
-    }
-
-    func isMirrored(at index: Int) -> Bool {
-        var i1 = index
-        var i2 = index + 1
-
-        while i1 >= 0 && i2 < rows.count {
-            if rows[i1] != rows[i2] {
-                return false
-            }
-            i1 -= 1
-            i2 += 1
-        }
-        return true
+        self.straight = straight
+        self.rotated = rotated.reversed()
     }
 }
 
 final class Day13: AOCDay {
-    private let patterns: [Pattern]
+    let patterns: [Pattern]
 
     init(input: String) {
         let groups = input.lines.grouped { $0.isEmpty }
@@ -65,31 +39,43 @@ final class Day13: AOCDay {
     }
 
     func part1() -> Int {
-        var sum = 0
-        for pattern in patterns {
-            if let horizontal = findReflection(in: pattern) {
-                sum += 100 * horizontal
-            } else if let vertical = findReflection(in: pattern.rotated()) {
-                sum += vertical
-            }
-        }
-        return sum
+        patterns
+            .map { findReflection(in: $0, smudgesAllowed: 0) }
+            .reduce(0, +)
     }
 
     func part2() -> Int {
-        return 0
+        patterns
+            .map { findReflection(in: $0, smudgesAllowed: 1) }
+            .reduce(0, +)
     }
 
-    private func findReflection(in pattern: Pattern) -> Int? {
-        for (index, line) in pattern.rows.enumerated().dropLast() {
-            if line == pattern.rows[index + 1] {
-                // possible mirror
-                if pattern.isMirrored(at: index) {
-                    return index + 1
-                }
+    private func findReflection(in pattern: Pattern, smudgesAllowed: Int) -> Int {
+        let horizontal = findReflection(in: pattern.straight, smudgesAllowed: smudgesAllowed)
+        if horizontal > 0 {
+            return horizontal * 100
+        }
+        return findReflection(in: pattern.rotated, smudgesAllowed: smudgesAllowed)
+    }
+
+    private func findReflection(in array: [Int], smudgesAllowed: Int) -> Int {
+        for line in 1..<array.count {
+            var top = array[0..<line]
+            var bottom = array[line...]
+            if bottom.count > top.count {
+                bottom = bottom.prefix(top.count)
+            } else if bottom.count < top.count {
+                top = top.suffix(bottom.count)
+            }
+
+            let zipped = zip(top, bottom.reversed())
+            let xors = zipped.map { $0.0 ^ $0.1 }
+            
+            if xors.map(\.nonzeroBitCount).reduce(0, +) == smudgesAllowed {
+                return line
             }
         }
 
-        return nil
+        return 0
     }
 }

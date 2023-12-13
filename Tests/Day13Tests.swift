@@ -24,8 +24,76 @@ final class Day13Tests: XCTestCase {
 #....#..#
 """
 
+    let testInput2 = """
+....###...#..##
+#..####..##..##
+.###..###.#.###
+...####...#####
+#..#..#..##..##
+#.##..##.#.....
+#........#.##..
+"""
+
+    let x = """
+.#..###
+..#....
+..#..#.
+.#####.
+##.#...
+##.#...
+######.
+..#..#.
+..#....
+.#..###
+#####..
+...#..#
+..##..#
+#####..
+#####..
+"""
+
+    let redditSamples = """
+#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.
+
+#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#
+
+.#.##.#.#
+.##..##..
+.#.##.#..
+#......##
+#......##
+.#.##.#..
+.##..##.#
+
+#..#....#
+###..##..
+.##.#####
+.##.#####
+###..##..
+#..#....#
+#..##...#
+"""
+
+    func testDay13_RedditSamples() throws {
+        let day = Day13(input: redditSamples)
+        XCTAssertEqual(day.part1(), 709)
+        XCTAssertEqual(day.part2(), 1400)
+    }
+
     func testDay13_part1() throws {
-        let day = Day13(input: testInput) 
+        let day = Day13(input: testInput)
         XCTAssertEqual(day.part1(), 405)
     }
 
@@ -36,11 +104,11 @@ final class Day13Tests: XCTestCase {
 
     func testDay13_part2() throws {
         let day = Day13(input: testInput)
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 400)
     }
 
     func testDay13_part2_solution() throws {
         let day = Day13(input: Day13.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 35554)
     }
 }
