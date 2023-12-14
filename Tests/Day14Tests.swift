@@ -7,16 +7,16 @@ import XCTest
 
 final class Day14Tests: XCTestCase {
     let testInput = """
-OOOO.#.O..
-OO..#....#
-OO..O##..O
-O..#.OO...
-........#.
-..#....#.#
-..O..#.O.O
-..O.......
+O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
 #....###..
-#....#....
+#OO..#....
 """
 
     func testDay14_part1() throws {
@@ -31,11 +31,11 @@ O..#.OO...
 
     func testDay14_part2() throws {
         let day = Day14(input: testInput)
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 64)
     }
 
     func testDay14_part2_solution() throws {
         let day = Day14(input: Day14.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 99641)
     }
 }

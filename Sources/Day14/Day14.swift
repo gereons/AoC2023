@@ -32,26 +32,67 @@ final class Day14: AOCDay {
     }
 
     func part2() -> Int {
-        return 0
+        var platform = platform
+
+        var seen = [[Point: Tile]: Int]()
+        var loopStart = -1
+        var loopLength = -1
+
+        for i in 1 ... 1_000_000_000 {
+            cycle(&platform)
+
+            if let step = seen[platform] {
+                loopStart = step
+                loopLength = i - step
+                break
+            } else {
+                seen[platform] = i
+            }
+        }
+
+        let remain = (1_000_000_000 - loopStart) % loopLength
+
+        for _ in 0 ..< remain {
+            cycle(&platform)
+        }
+
+        return load(on: platform)
+    }
+
+    private func cycle(_ platform: inout [Point: Tile]) {
+        tilt(&platform, to: .n)
+        tilt(&platform, to: .w)
+        tilt(&platform, to: .s)
+        tilt(&platform, to: .e)
     }
 
     private func tilt(_ platform: inout [Point: Tile], to direction: Direction) {
         let maxX = platform.keys.max(of: \.x)!
         let maxY = platform.keys.max(of: \.y)!
 
-        for y in 1...maxY {
-            for x in 0...maxX {
+        var yRange = Array(0 ... maxY)
+        var xRange = Array(0 ... maxX)
+        switch direction {
+        case .n, .w: ()
+        case .s: yRange = yRange.reversed()
+        case .e: xRange = xRange.reversed()
+        default: fatalError()
+        }
+
+        for y in yRange {
+            for x in xRange {
                 let point = Point(x, y)
                 if platform[point]! != .roundRock { continue }
-                // move to `direction` as far as possible
                 move(point, in: &platform, to: direction)
             }
         }
     }
 
+    // move to `direction` as far as possible
     private func move(_ point: Point, in platform: inout [Point: Tile], to direction: Direction) {
         var point = point
         while true {
+            assert(platform[point] == .roundRock)
             let movedPoint = point.moved(to: direction)
             if platform[movedPoint] == .ground {
                 platform[movedPoint] = .roundRock
