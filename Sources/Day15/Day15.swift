@@ -48,22 +48,17 @@ final class Day15: AOCDay {
         }
 
         return boxes
-            .enumerated().map { b, box in
+            .enumerated().flatMap { b, box in
                 box.lenses.enumerated().map { l, lens in
                     (b + 1) * (l + 1) * lens.focalLength
                 }
             }
-            .flatMap { $0 }
             .reduce(0, +)
     }
 
     private func hash(_ string: String) -> Int {
-        var hash = 0
-        for ch in string {
-            hash += Int(ch.asciiValue!)
-            hash *= 17
-            hash = hash % 256
+        string.reduce(into: 0) {
+            $0 = (($0 + Int($1.asciiValue!)) * 17) % 256
         }
-        return hash
     }
 }
