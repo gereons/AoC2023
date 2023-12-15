@@ -6,23 +6,33 @@
 
 import AoCTools
 
-private enum Tile: Character {
-    case ground = "."
-    case roundRock = "O"
-    case cubeRock = "#"
-}
-
 final class Day14: AOCDay {
-    private let platform: [Point: Tile]
+    private let platform: [Point: Character]
+    let maxX: Int
+    let maxY: Int
 
     init(input: String) {
-        var platform = [Point: Tile]()
-        for (y, line) in input.lines.enumerated() {
+        var platform = [Point: Character]()
+        let lines = input.lines
+        maxX = lines[0].count - 1
+        maxY = lines.count - 1
+
+        for (y, line) in lines.enumerated() {
             for (x, ch) in line.enumerated() {
-                platform[Point(x, y)] = Tile(rawValue: ch)!
+                platform[Point(x, y)] = ch
             }
         }
         self.platform = platform
+    }
+
+    private func draw(_ platform: [Point: Character]) {
+        for y in 0...maxY {
+            for x in 0...maxX {
+                print(platform[Point(x, y)]!, terminator: "")
+            }
+            print("")
+        }
+        print("---")
     }
 
     func part1() -> Int {
@@ -34,7 +44,7 @@ final class Day14: AOCDay {
     func part2() -> Int {
         var platform = platform
 
-        var seen = [[Point: Tile]: Int]()
+        var seen = [[Point: Character]: Int]()
         var loopStart = -1
         var loopLength = -1
 
@@ -59,17 +69,14 @@ final class Day14: AOCDay {
         return load(on: platform)
     }
 
-    private func cycle(_ platform: inout [Point: Tile]) {
+    private func cycle(_ platform: inout [Point: Character]) {
         tilt(&platform, to: .n)
         tilt(&platform, to: .w)
         tilt(&platform, to: .s)
         tilt(&platform, to: .e)
     }
 
-    private func tilt(_ platform: inout [Point: Tile], to direction: Direction) {
-        let maxX = platform.keys.max(of: \.x)!
-        let maxY = platform.keys.max(of: \.y)!
-
+    private func tilt(_ platform: inout [Point: Character], to direction: Direction) {
         var yRange = Array(0 ... maxY)
         var xRange = Array(0 ... maxX)
         switch direction {
@@ -82,34 +89,33 @@ final class Day14: AOCDay {
         for y in yRange {
             for x in xRange {
                 let point = Point(x, y)
-                if platform[point]! != .roundRock { continue }
+                if platform[point]! != "O" {
+                    continue
+                }
                 move(point, in: &platform, to: direction)
             }
         }
     }
 
     // move to `direction` as far as possible
-    private func move(_ point: Point, in platform: inout [Point: Tile], to direction: Direction) {
+    private func move(_ point: Point, in platform: inout [Point: Character], to direction: Direction) {
         var point = point
+        platform[point] = "."
         while true {
-            assert(platform[point] == .roundRock)
             let movedPoint = point.moved(to: direction)
-            if platform[movedPoint] == .ground {
-                platform[movedPoint] = .roundRock
-                platform[point] = .ground
+            if platform[movedPoint] == "." {
                 point = movedPoint
             } else {
-                return
+                break
             }
         }
+        platform[point] = "O"
     }
 
-    private func load(on platform: [Point: Tile]) -> Int {
-        let maxY = platform.keys.max(of: \.y)!
-        var sum = 0
-        for y in 0...maxY {
-            sum += platform.filter { $0.key.y == y && $0.value == .roundRock }.count * (maxY - y + 1)
+    private func load(on platform: [Point: Character]) -> Int {
+        (0...maxY).map { y in
+            platform.filter { $0.key.y == y && $0.value == "O" }.count * (maxY - y + 1)
         }
-        return sum
+        .reduce(0, +)
     }
 }
