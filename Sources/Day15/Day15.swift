@@ -6,6 +6,15 @@
 
 import AoCTools
 
+private struct Lens {
+    let label: String
+    let focalLength: Int
+}
+
+private class Box {
+    var lenses = [Lens]()
+}
+
 final class Day15: AOCDay {
     let tokens: [String]
 
@@ -18,7 +27,34 @@ final class Day15: AOCDay {
     }
 
     func part2() -> Int {
-        return 0
+        let boxes = (0..<256).map { _ in Box() }
+        for token in tokens {
+            if token.hasSuffix("-") {
+                // remove lens from its box
+                let label = String(token.dropLast())
+                boxes[hash(label)].lenses.removeAll { $0.label == label }
+            } else {
+                // add or change lens
+                let parts = token.components(separatedBy: "=")
+                let label = parts[0]
+                let focalLength = Int(parts[1])!
+                let box = boxes[hash(label)]
+                if let index = box.lenses.firstIndex(where: { $0.label == label }) {
+                    box.lenses[index] = Lens(label: label, focalLength: focalLength)
+                } else {
+                    box.lenses.append(Lens(label: label, focalLength: focalLength))
+                }
+            }
+        }
+
+        return boxes
+            .enumerated().map { b, box in
+                box.lenses.enumerated().map { l, lens in
+                    (b + 1) * (l + 1) * lens.focalLength
+                }
+            }
+            .flatMap { $0 }
+            .reduce(0, +)
     }
 
     private func hash(_ string: String) -> Int {
