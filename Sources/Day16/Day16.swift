@@ -6,16 +6,12 @@
 
 import AoCTools
 
-private struct Beam: Hashable, CustomStringConvertible {
+private struct Beam: Hashable {
     var direction: Direction
     var position: Point
 
     func split(_ newDirection: Direction) -> Beam {
         return Beam(direction: newDirection, position: self.position)
-    }
-
-    var description: String {
-        "\(position.description)-\(direction)"
     }
 }
 
@@ -37,8 +33,32 @@ final class Day16: AOCDay {
     }
 
     func part1() -> Int {
-        var beams = [Beam(direction: .e, position: .zero.moved(to: .w))]
+        let start = Beam(direction: .e, position: .zero.moved(to: .w))
+        return energized(startingAt: start)
+    }
+
+    func part2() -> Int {
+        var maxEnergized = 0
+        for y in 0...maxY {
+            let startLeft = Beam(direction: .e, position: Point(-1, y))
+            maxEnergized = max(maxEnergized, energized(startingAt: startLeft))
+
+            let startRight = Beam(direction: .w, position: Point(maxX + 1, y))
+            maxEnergized = max(maxEnergized, energized(startingAt: startRight))
+        }
+        for x in 0...maxX {
+            let startTop = Beam(direction: .s, position: Point(x, -1))
+            maxEnergized = max(maxEnergized, energized(startingAt: startTop))
+
+            let startBottom = Beam(direction: .n, position: Point(x, maxY + 1))
+            maxEnergized = max(maxEnergized, energized(startingAt: startBottom))
+        }
+        return maxEnergized
+    }
+
+    private func energized(startingAt beam: Beam) -> Int {
         var visited = Set<Beam>()
+        var beams = [beam]
 
         while !beams.isEmpty {
             var beam = beams.remove(at: 0)
@@ -94,9 +114,5 @@ final class Day16: AOCDay {
                 return
             }
         }
-    }
-
-    func part2() -> Int {
-        return 0
     }
 }

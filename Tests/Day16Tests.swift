@@ -31,11 +31,11 @@ final class Day16Tests: XCTestCase {
 
     func testDay16_part2() throws {
         let day = Day16(input: testInput)
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 51)
     }
 
     func testDay16_part2_solution() throws {
         let day = Day16(input: Day16.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 7594)
     }
 }
