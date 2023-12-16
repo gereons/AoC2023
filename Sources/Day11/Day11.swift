@@ -75,19 +75,3 @@ final class Day11: AOCDay {
         return xExpanded
     }
 }
-
-private extension Array {
-    private func combinations(of elements: ArraySlice<Element>, count: Int) -> [[Element]] {
-        guard count > 0 else { return [[]] }
-        guard let first = elements.first else { return [] }
-
-        let head = [first]
-        let combos = combinations(of: elements.dropFirst(), count: count - 1)
-        let withHead = combos.map { head + $0 }
-        return withHead + combinations(of: elements.dropFirst(), count: count)
-    }
-
-    func combinations(of count: Int) -> [[Element]] {
-        return combinations(of: ArraySlice(self), count: count)
-    }
-}
