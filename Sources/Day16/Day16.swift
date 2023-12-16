@@ -22,8 +22,8 @@ final class Day16: AOCDay {
 
     init(input: String) {
         let lines = input.lines
-        maxX = lines[0].count - 1
-        maxY = lines.count - 1
+        maxX = lines[0].count
+        maxY = lines.count
         let points = input.lines.enumerated().flatMap { y, line in
             line.enumerated().map { x, ch in
                 (Point(x, y), ch)
@@ -39,18 +39,18 @@ final class Day16: AOCDay {
 
     func part2() -> Int {
         var maxEnergized = 0
-        for y in 0...maxY {
+        for y in 0..<maxY {
             let startLeft = Beam(direction: .e, position: Point(-1, y))
             maxEnergized = max(maxEnergized, energized(startingAt: startLeft))
 
-            let startRight = Beam(direction: .w, position: Point(maxX + 1, y))
+            let startRight = Beam(direction: .w, position: Point(maxX, y))
             maxEnergized = max(maxEnergized, energized(startingAt: startRight))
         }
-        for x in 0...maxX {
+        for x in 0..<maxX {
             let startTop = Beam(direction: .s, position: Point(x, -1))
             maxEnergized = max(maxEnergized, energized(startingAt: startTop))
 
-            let startBottom = Beam(direction: .n, position: Point(x, maxY + 1))
+            let startBottom = Beam(direction: .n, position: Point(x, maxY))
             maxEnergized = max(maxEnergized, energized(startingAt: startBottom))
         }
         return maxEnergized
