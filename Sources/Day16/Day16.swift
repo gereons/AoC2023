@@ -33,7 +33,7 @@ final class Day16: AOCDay {
     }
 
     func part1() -> Int {
-        let start = Beam(direction: .e, position: .zero.moved(to: .w))
+        let start = Beam(direction: .e, position: Point(-1, 0))
         return energized(startingAt: start)
     }
 
@@ -60,8 +60,7 @@ final class Day16: AOCDay {
         var visited = Set<Beam>()
         var beams = [beam]
 
-        while !beams.isEmpty {
-            var beam = beams.remove(at: 0)
+        while var beam = beams.popLast() {
             findPath(for: &beam, visited: &visited, beams: &beams)
         }
         return Set(visited.map { $0.position }).count
@@ -71,7 +70,7 @@ final class Day16: AOCDay {
         while true {
             let moved = beam.position.moved(to: beam.direction)
             if grid[moved] == nil {
-                return
+                return // we moved out of bounds
             }
 
             beam.position = moved
@@ -85,7 +84,7 @@ final class Day16: AOCDay {
                 case .e: beam.direction = .n
                 default: fatalError()
                 }
-            case #"\"#: // reflect 90°
+            case "\\": // reflect 90°
                 switch beam.direction {
                 case .n: beam.direction = .w
                 case .w: beam.direction = .n
@@ -93,14 +92,14 @@ final class Day16: AOCDay {
                 case .e: beam.direction = .s
                 default: fatalError()
                 }
-            case "-": //
+            case "-": // continue or split
                 switch beam.direction {
                 case .n: beam.direction = .w; beams.append(beam.split(.e))
                 case .s: beam.direction = .e; beams.append(beam.split(.w))
                 case .w, .e: () // nop
                 default: fatalError()
                 }
-            case "|":
+            case "|": // continue or split
                 switch beam.direction {
                 case .w: beam.direction = .n; beams.append(beam.split(.s))
                 case .e: beam.direction = .s; beams.append(beam.split(.n))
@@ -111,7 +110,7 @@ final class Day16: AOCDay {
             }
             let (inserted, _) = visited.insert(beam)
             if !inserted {
-                return
+                return // we've been here before
             }
         }
     }
