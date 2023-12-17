@@ -16,20 +16,16 @@ private struct Beam: Hashable {
 }
 
 final class Day16: AOCDay {
-    let grid: [Point: Character]
+    let grid: [[Character]]
     let maxX: Int
     let maxY: Int
 
     init(input: String) {
-        let lines = input.lines
-        maxX = lines[0].count
-        maxY = lines.count
-        let points = input.lines.enumerated().flatMap { y, line in
-            line.enumerated().map { x, ch in
-                (Point(x, y), ch)
-            }
+        grid = input.lines.map { line in
+            line.map { $0 }
         }
-        grid = Dictionary(uniqueKeysWithValues: points)
+        maxX = grid[0].count
+        maxY = grid.count
     }
 
     func part1() -> Int {
@@ -69,12 +65,13 @@ final class Day16: AOCDay {
     private func findPath(for beam: inout Beam, visited: inout Set<Beam>, beams: inout [Beam]) {
         while true {
             let moved = beam.position.moved(to: beam.direction)
-            if grid[moved] == nil {
+            let inside = 0..<maxX ~= moved.x && 0..<maxY ~= moved.y
+            if !inside {
                 return // we moved out of bounds
             }
 
             beam.position = moved
-            switch grid[moved] {
+            switch grid[moved.y][moved.x] {
             case ".": () // nop
             case "/": // reflect 90°
                 switch beam.direction {
