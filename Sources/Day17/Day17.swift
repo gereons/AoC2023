@@ -19,8 +19,6 @@ private struct State: Hashable {
 }
 
 private struct City: Pathfinding {
-    typealias Coordinate = State
-
     private let grid: [[Int]]
     private let chainRange: ClosedRange<Int>
 
@@ -81,17 +79,15 @@ final class Day17: AOCDay {
 
     func part1() -> Int {
         let city = City(grid: grid, chainRange: 0...3)
-        let pathfinder = AStarPathfinder(map: city)
-
-        let start = State(position: .zero)
-        let goal = State(position: Point(maxX - 1, maxY - 1))
-        let path = pathfinder.shortestPath(from: start, to: goal)
-
-        return path.map { grid[$0.position.y][$0.position.x] }.reduce(0, +)
+        return totalHeatloss(in: city)
     }
 
     func part2() -> Int {
         let city = City(grid: grid, chainRange: 4...10)
+        return totalHeatloss(in: city)
+    }
+
+    private func totalHeatloss(in city: City) -> Int {
         let pathfinder = AStarPathfinder(map: city)
 
         let start = State(position: .zero)
