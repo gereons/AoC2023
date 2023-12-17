@@ -10,9 +10,15 @@ private struct State: Hashable {
     let position: Point
     let direction: Direction?
     let chainLength: Int
+
+    init(position: Point, direction: Direction? = nil, chainLength: Int = 0) {
+        self.position = position
+        self.direction = direction
+        self.chainLength = chainLength
+    }
 }
 
-private class City: Pathfinding {
+private struct City: Pathfinding {
     typealias Coordinate = State
 
     private let grid: [[Int]]
@@ -77,8 +83,8 @@ final class Day17: AOCDay {
         let city = City(grid: grid, chainRange: 0...3)
         let pathfinder = AStarPathfinder(map: city)
 
-        let start = State(position: .zero, direction: nil, chainLength: 0)
-        let goal = State(position: Point(maxX - 1, maxY - 1), direction: nil, chainLength: 0)
+        let start = State(position: .zero)
+        let goal = State(position: Point(maxX - 1, maxY - 1))
         let path = pathfinder.shortestPath(from: start, to: goal)
 
         return path.map { grid[$0.position.y][$0.position.x] }.reduce(0, +)
@@ -88,8 +94,8 @@ final class Day17: AOCDay {
         let city = City(grid: grid, chainRange: 4...10)
         let pathfinder = AStarPathfinder(map: city)
 
-        let start = State(position: .zero, direction: nil, chainLength: 0)
-        let goal = State(position: Point(maxX - 1, maxY - 1), direction: nil, chainLength: 0)
+        let start = State(position: .zero)
+        let goal = State(position: Point(maxX - 1, maxY - 1))
         let path = pathfinder.shortestPath(from: start, to: goal)
 
         return path.map { grid[$0.position.y][$0.position.x] }.reduce(0, +)

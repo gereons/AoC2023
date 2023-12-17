@@ -71,7 +71,7 @@ L.L7LFJ|||||FJL7||LJ
 L7JLJL-JLJLJL--JLJ.L
 """
 
-    func testDay10_part1a() throws {
+    func testDay10_part1() throws {
         let day1a = Day10(input: testInput1a)
         XCTAssertEqual(day1a.part1(), 4)
 

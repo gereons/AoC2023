@@ -40,14 +40,12 @@ final class Day17Tests: XCTestCase {
         XCTAssertEqual(day.part1(), 1238)
     }
 
-    func testDay17_part2a() throws {
-        let day = Day17(input: testInput)
-        XCTAssertEqual(day.part2(), 94)
-    }
+    func testDay17_part2() throws {
+        let day1 = Day17(input: testInput)
+        XCTAssertEqual(day1.part2(), 94)
 
-    func testDay17_part2b() throws {
-        let day = Day17(input: testInput2)
-        XCTAssertEqual(day.part2(), 71)
+        let day2 = Day17(input: testInput2)
+        XCTAssertEqual(day2.part2(), 71)
     }
 
     func testDay17_part2_solution() throws {
