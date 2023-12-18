@@ -7,18 +7,19 @@
 import AoCTools
 
 private struct Dig {
-    let direction: Direction
-    let length: Int
-    let color: UInt32
+    typealias Instruction = (direction: Direction, length: Int)
+    let part1: Instruction
+    let part2: Instruction
 
-    static let dirMap: [String: Direction] = ["R": .e, "L": .w, "U": .n, "D": .s]
+    static let dirMap1: [String: Direction] = ["R": .e, "L": .w, "U": .n, "D": .s]
+    static let dirMap2: [Int: Direction] = [0: .e, 2: .w, 3: .n, 1: .s]
 
     init(_ string: String) {
         // R 6 (#70c710)
         let parts = string.components(separatedBy: " ")
-        direction = Self.dirMap[parts[0]]!
-        length = Int(parts[1])!
-        color = UInt32(parts[2].substring(2, 6), radix: 16)!
+        part1 = (direction: Self.dirMap1[parts[0]]!, length: Int(parts[1])!)
+        let color = Int(parts[2].substring(2, 6), radix: 16)!
+        part2 = (direction: Self.dirMap2[color & 0xf]!, length: color >> 4)
     }
 }
 
@@ -30,62 +31,27 @@ final class Day18: AOCDay {
     }
 
     func part1() -> Int {
-        var point = Point.zero
-        var map = Set([point])
-        for dig in digs {
-            for _ in 0 ..< dig.length {
-                point = point.moved(to: dig.direction)
-                map.insert(point)
-            }
-        }
-
-        // draw(map)
-        let start = findStart(in: map)
-        floodFill(map: &map, from: start)
-        return map.count
+        lagoonSize(with: digs, instructions: \.part1)
     }
 
     func part2() -> Int {
-        return 0
+        lagoonSize(with: digs, instructions: \.part2)
     }
 
-    private func findStart(in map: Set<Point>) -> Point {
-        // find the topmost "left corner" that looks like
-        // ##     <- minY
-        // #.
-        let minY = map.min(of: \.y)!
-        let line1 = map.filter { $0.y == minY + 1 }.sorted(by: \.x)
-        let start = line1.first!.moved(to: .e)
-        assert(map.contains(start.moved(to: .n)))
-        assert(map.contains(start.moved(to: .w)))
-        assert(map.contains(start.moved(to: .nw)))
-        return start
-    }
-
-    private func draw(_ map: Set<Point>) {
-        let maxX = map.max(of: \.x)!
-        let minX = map.min(of: \.x)!
-        let maxY = map.max(of: \.y)!
-        let minY = map.min(of: \.y)!
-
-        for y in minY ... maxY {
-            for x in minX ... maxX {
-                let ch = map.contains(Point(x, y)) ? "#" : "."
-                print(ch, terminator: "")
-            }
-            print()
+    private func lagoonSize(with digs: [Dig], instructions path: KeyPath<Dig, (Dig.Instruction)>) -> Int {
+        var point = Point.zero
+        var points = [point]
+        for dig in digs.map({ $0[keyPath: path] }) {
+            point = point.moved(to: dig.direction, steps: dig.length)
+            points.append(point)
         }
-        print("---")
-    }
+        let circumference = digs.map { $0[keyPath: path].length }.reduce(0, +)
 
-    private func floodFill(map: inout Set<Point>, from start: Point) {
-        var queue = [start]
+        let area = points
+            .adjacentPairs()
+            .map { ($0.x * $1.y) - ($0.y * $1.x) }
+            .reduce(0, +)
 
-        while let point = queue.popLast() {
-            if map.contains(point) { continue }
-            map.insert(point)
-            let neighbors = point.neighbors().filter { !map.contains($0) }
-            queue.append(contentsOf: neighbors)
-        }
+        return area / 2 + circumference / 2 + 1
     }
 }

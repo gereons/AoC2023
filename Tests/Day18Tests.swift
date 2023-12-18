@@ -40,6 +40,6 @@ U 2 (#7a21e3)
 
     func testDay18_part2_solution() throws {
         let day = Day18(input: Day18.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 79088855654037)
     }
 }
