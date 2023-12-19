@@ -38,11 +38,11 @@ hdj{m>838:A,pv}
 
     func testDay19_part2() throws {
         let day = Day19(input: testInput)
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 167409079868000)
     }
 
     func testDay19_part2_solution() throws {
         let day = Day19(input: Day19.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 126107942006821)
     }
 }

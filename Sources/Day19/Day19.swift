@@ -5,26 +5,6 @@
 //
 
 import AoCTools
- /*
-  px{a<2006:qkq,m>2090:A,rfg}
-  pv{a>1716:R,A}
-  lnx{m>1548:A,A}
-  rfg{s<537:gd,x>2440:R,A}
-  qs{s>3448:A,lnx}
-  qkq{x<1416:A,crn}
-  crn{x>2662:A,R}
-  in{s<1351:px,qqz}
-
-  gd{a>3333:R,R}
-  hdj{m>838:A,pv}
-
-
-  {x=1679,m=44,a=2067,s=496}
-  {x=2036,m=264,a=79,s=2244}
-  {x=2461,m=1339,a=466,s=291}
-  {x=2127,m=1623,a=2188,s=1013}
-
-  */
 
 private enum Result {
     case `continue`
@@ -58,32 +38,28 @@ private struct Workflow {
 }
 
 private struct Rule {
-    let property: KeyPath<Part, Int>?
-    let comparison: (Int) -> Bool
+    let property: String?
+    let comparison: Comp
+    let value: Int
     let result: String
+
+    enum Comp: String {
+        case lt = "<"
+        case gt = ">"
+    }
 
     // s>2770:qs or just "A"/"R"/"xyz"
     init(_ string: String) {
         let parts = string.components(separatedBy: ":")
         if parts.count == 1 {
             property = nil
+            comparison = .lt
+            value = 0
             result = parts[0]
-            comparison = { _ in fatalError() }
         } else {
-            assert(parts.count == 2)
-            switch parts[0].charAt(0) {
-            case "x": property = \.x
-            case "m": property = \.m
-            case "a": property = \.a
-            case "s": property = \.s
-            default: fatalError()
-            }
-            let value = Int(parts[0].dropFirst(2))!
-            switch parts[0].charAt(1) {
-            case "<": comparison = { x in x < value }
-            case ">": comparison = { x in x > value }
-            default: fatalError()
-            }
+            property = parts[0].charAt(0)
+            comparison = Comp(rawValue: parts[0].charAt(1))!
+            value = Int(parts[0].dropFirst(2))!
             result = parts[1]
         }
     }
@@ -91,7 +67,10 @@ private struct Rule {
     func apply(to part: Part) -> Result {
         var ok = true
         if let property {
-            ok = comparison(part[keyPath: property])
+            switch comparison {
+            case .lt: ok = part[property] < value
+            case .gt: ok = part[property] > value
+            }
         }
         if !ok {
             return .continue
@@ -120,6 +99,30 @@ private struct Part {
     }
 
     var sum: Int { x + m + a + s }
+
+    subscript(index: String) -> Int {
+        switch index {
+        case "x": return x
+        case "m": return m
+        case "a": return a
+        case "s": return s
+        default: fatalError()
+        }
+    }
+}
+
+private final class Range {
+    let name: String
+    var ranges: [String: ClosedRange<Int>]
+
+    init(name: String, ranges: [String : ClosedRange<Int>]) {
+        self.name = name
+        self.ranges = ranges
+    }
+
+    var matches: Int {
+        ranges.values.map { $0.upperBound - $0.lowerBound + 1 }.reduce(1, *)
+    }
 }
 
 final class Day19: AOCDay {
@@ -136,18 +139,17 @@ final class Day19: AOCDay {
     func part1() -> Int {
         var accepted = [Part]()
         for part in parts {
-            var wf = workflows["in"]!
+            var workflow = workflows["in"]!
             var done = false
             while !done {
-                let result = wf.apply(to: part)
-                switch result {
-                case .accept: 
+                switch workflow.apply(to: part) {
+                case .accept:
                     accepted.append(part)
                     done = true
                 case .reject:
                     done = true
                 case .newWorkflow(let name):
-                    wf = workflows[name]!
+                    workflow = workflows[name]!
                 case .continue:
                     fatalError()
                 }
@@ -158,6 +160,48 @@ final class Day19: AOCDay {
     }
 
     func part2() -> Int {
-        return 0
+        let root = Range(name: "in", ranges: [
+            "x": 1...4000,
+            "m": 1...4000,
+            "a": 1...4000,
+            "s": 1...4000
+        ])
+
+        var queue = [root]
+        var accepted = [Range]()
+        while let range = queue.popLast() {
+            let splits = split(range)
+            accepted.append(contentsOf: splits.filter { $0.name == "A" })
+            queue.append(contentsOf: splits)
+        }
+
+        return accepted.map { $0.matches }.reduce(0, +)
+    }
+
+    private func split(_ range: Range) -> [Range] {
+        guard let wf = workflows[range.name] else { return [] }
+
+        var remainingRanges = range.ranges
+        var result = [Range]()
+        for rule in wf.rules {
+            if let property = rule.property {
+                // split ranges
+                let range = remainingRanges[property]!
+                let newRange = Range(name: rule.result, ranges: remainingRanges)
+                switch rule.comparison {
+                case .lt:
+                    newRange.ranges[property] = range.lowerBound ... rule.value - 1
+                    remainingRanges[property] = rule.value ... range.upperBound
+                case .gt: ()
+                    newRange.ranges[property] = rule.value + 1 ... range.upperBound
+                    remainingRanges[property] = range.lowerBound ... rule.value
+                }
+                result.append(newRange)
+            } else {
+                // go to workflow
+                result.append(Range(name: rule.result, ranges: remainingRanges))
+            }
+        }
+        return result
     }
 }
