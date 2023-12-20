@@ -7,7 +7,6 @@
 import AoCTools
 
 private enum Result {
-    case `continue`
     case accept
     case reject
     case newWorkflow(String)
@@ -26,10 +25,7 @@ private struct Workflow {
 
     func apply(to part: Part) -> Result {
         for rule in rules {
-            let result = rule.apply(to: part)
-            if case .continue = result {
-                continue
-            } else {
+            if let result = rule.apply(to: part) {
                 return result
             }
         }
@@ -64,7 +60,7 @@ private struct Rule {
         }
     }
 
-    func apply(to part: Part) -> Result {
+    func apply(to part: Part) -> Result? {
         var ok = true
         if let property {
             switch comparison {
@@ -73,7 +69,7 @@ private struct Rule {
             }
         }
         if !ok {
-            return .continue
+            return nil
         }
         switch result {
         case "A":
@@ -111,7 +107,7 @@ private struct Part {
     }
 }
 
-private final class Range {
+private struct Range {
     let name: String
     var ranges: [String: ClosedRange<Int>]
 
@@ -150,8 +146,6 @@ final class Day19: AOCDay {
                     done = true
                 case .newWorkflow(let name):
                     workflow = workflows[name]!
-                case .continue:
-                    fatalError()
                 }
             }
         }
@@ -179,15 +173,15 @@ final class Day19: AOCDay {
     }
 
     private func split(_ range: Range) -> [Range] {
-        guard let wf = workflows[range.name] else { return [] }
+        guard let workflow = workflows[range.name] else { return [] }
 
         var remainingRanges = range.ranges
         var result = [Range]()
-        for rule in wf.rules {
+        for rule in workflow.rules {
             if let property = rule.property {
                 // split ranges
                 let range = remainingRanges[property]!
-                let newRange = Range(name: rule.result, ranges: remainingRanges)
+                var newRange = Range(name: rule.result, ranges: remainingRanges)
                 switch rule.comparison {
                 case .lt:
                     newRange.ranges[property] = range.lowerBound ... rule.value - 1
