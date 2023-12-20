@@ -25,8 +25,8 @@ broadcaster -> a
         let day1 = Day20(input: testInput1)
         XCTAssertEqual(day1.part1(), 32000000)
 
-//        let day2 = Day20(input: testInput2)
-//        XCTAssertEqual(day2.part1(), 11687500)
+        let day2 = Day20(input: testInput2)
+        XCTAssertEqual(day2.part1(), 11687500)
     }
 
     func testDay20_part1_solution() throws {
@@ -34,13 +34,8 @@ broadcaster -> a
         XCTAssertEqual(day.part1(), 879834312)
     }
 
-    func testDay20_part2() throws {
-        let day = Day20(input: testInput1)
-        XCTAssertEqual(day.part2(), 0)
-    }
-
     func testDay20_part2_solution() throws {
         let day = Day20(input: Day20.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 243037165713371)
     }
 }
