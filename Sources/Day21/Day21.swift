@@ -27,11 +27,7 @@ private struct Grid {
 
     private func map(_ value: Int, _ max: Int) -> Int {
         let mod = value % max
-        if mod < 0 {
-            let v2 = max + mod
-            return v2 == max ? 0 : v2
-        }
-        return mod
+        return mod < 0 ? max + mod : mod
     }
 }
 
