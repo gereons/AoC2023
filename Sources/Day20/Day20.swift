@@ -33,16 +33,20 @@ private class CommunicationsModule {
 
     func reset() {}
 
+    func send(_ pulse: Pulse) -> [Message] {
+        destinations.map {
+            Message(pulse: pulse, from: self.name, destination: $0)
+        }
+    }
+
     static func make(from string: String) -> CommunicationsModule {
         let parts = string.components(separatedBy: " -> ")
-        let prefix = parts[0].prefix(1)
-        let name = String(parts[0].dropFirst(["%", "&"].contains(prefix) ? 1 : 0))
         let destinations = parts[1].components(separatedBy: ", ")
 
-        switch prefix {
-        case "%": return Flipflop(name: name, destinations: destinations)
-        case "&": return Conjunction(name: name, destinations: destinations)
-        default: return Broadcaster(name: name, destinations: destinations)
+        switch parts[0].prefix(1) {
+        case "%": return Flipflop(name: String(parts[0].dropFirst(1)), destinations: destinations)
+        case "&": return Conjunction(name: String(parts[0].dropFirst(1)), destinations: destinations)
+        default: return Broadcaster(name: parts[0], destinations: destinations)
         }
     }
 }
@@ -60,10 +64,7 @@ private final class Flipflop: CommunicationsModule {
         }
 
         state.toggle()
-        let pulse: Pulse = state ? .high : .low
-        return destinations.map {
-            Message(pulse: pulse, from: self.name, destination: $0)
-        }
+        return send(state ? .high : .low)
     }
 }
 
@@ -84,26 +85,25 @@ private final class Conjunction: CommunicationsModule {
 
     override func receive(_ pulse: Pulse, from name: String) -> [Message] {
         inputs[name] = pulse
-        var send = Pulse.high
+        var pulse = Pulse.high
         if inputs.values.allSatisfy({ $0 == .high }) {
-            send = .low
+            pulse = .low
         }
         if !triggered {
-            triggered = send == .high
+            triggered = pulse == .high
         }
-        return destinations.map {
-            Message(pulse: send, from: self.name, destination: $0)
-        }
+        return send(pulse)
     }
 }
 
 private final class Broadcaster: CommunicationsModule {
     override func receive(_ pulse: Pulse, from name: String) -> [Message] {
-        destinations.map { Message(pulse: pulse, from: self.name, destination: $0) }
+        send(pulse)
     }
 }
 
-private class Output: CommunicationsModule {
+private final class Output: CommunicationsModule {
+    // drop all input pulses
 }
 
 final class Day20: AOCDay {
@@ -165,7 +165,7 @@ final class Day20: AOCDay {
         modules.values.forEach { $0.reset() }
 
         // find the input to rx
-        let rxSender = modules.values.first { $0.destinations == ["rx" ] }!
+        let rxSender = modules.values.first { $0.destinations == ["rx"] }!
 
         // find its input conjunctions so we can monitor them
         let inputs = modules.values.filter { $0.destinations.contains(rxSender.name) }.compactMap { $0 as? Conjunction }
@@ -173,7 +173,6 @@ final class Day20: AOCDay {
 
         let broadcaster = modules["broadcaster"]!
 
-    loop:
         for presses in 1 ..< Int.max {
             var messages = broadcaster.receive(.low, from: "btn")
 
@@ -187,14 +186,14 @@ final class Day20: AOCDay {
                             counts[input.name] = presses
                         }
                     }
-                    if counts.count == inputs.count {
-                        break loop
-                    }
                 }
                 messages = next
             }
+            if counts.count == inputs.count {
+                break
+            }
         }
-        
+
         return counts.values.reduce(1, *)
     }
 }

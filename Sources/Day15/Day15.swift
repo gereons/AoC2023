@@ -57,8 +57,8 @@ final class Day15: AOCDay {
     }
 
     private func hash(_ string: String) -> Int {
-        string.reduce(into: 0) {
-            $0 = (($0 + Int($1.asciiValue!)) * 17) % 256
+        string.reduce(0) {
+            ($0 + Int($1.asciiValue!)) * 17 % 256
         }
     }
 }

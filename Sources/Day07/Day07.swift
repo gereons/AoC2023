@@ -55,10 +55,10 @@ private class Hand {
     private func getJokerRank() -> Rank {
         var dict = cards.reduce(into: [:]) { $0[$1, default: 0] += 1}
         let jokers = dict.removeValue(forKey: "J") ?? 0
-        let max = dict.values.max() ?? 0
         if dict.isEmpty {
             return .five
         }
+        let max = dict.values.max() ?? 0
         let entry = dict.first { $0.value == max }!
         dict[entry.key] = entry.value + jokers
         return getRank(for: dict)
