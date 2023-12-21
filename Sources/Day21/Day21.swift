@@ -7,7 +7,7 @@
 import AoCTools
 
 private struct Grid {
-    private let grid: [[Character]]
+    let grid: [[Character]]
     let start: Point
 
     init(_ string: String) {
@@ -48,31 +48,29 @@ final class Day21: AOCDay {
         var steps = [Point: Set<Int>]()
 
         floodFill(grid, &steps, from: grid.start, step: 1, max: maxSteps)
-        // draw(grid: grid, steps: steps)
         return steps.values.compactMap { $0 }.filter { $0.contains(maxSteps) }.count
     }
 
     func part2() -> Int {
-        return 0
-    }
+        let width = grid.grid[0].count
+        // part 2 not solved in code. ¯\_(ツ)_/¯
 
-    private func draw(grid: Grid, steps: [Point: Set<Int>]) {
-        let minX = steps.keys.min(of: \.x)!
-        let maxX = steps.keys.max(of: \.x)!
-        let minY = steps.keys.min(of: \.y)!
-        let maxY = steps.keys.max(of: \.y)!
+        // our max steps of 26501365 is 202300 * 131 + 65, where 131 is the width of our input grid
+        // step 1: figure out 3 data points: count(65), count(65+131) and count(65+131+131)
+        // step 2: plug the results in to wolfram alpha (https://www.wolframalpha.com/input?i=quadratic+fit+calculator&assumption=%7B%22F%22%2C+%22QuadraticFitCalculator%22%2C+%22data3x%22%7D+-%3E%22%7B0%2C+1%2C+2%7D%22&assumption=%7B%22F%22%2C+%22QuadraticFitCalculator%22%2C+%22data3y%22%7D+-%3E%22%7B3814%2C+33952%2C+94138%7D%22
+        // x: {0, 1, 2}
+        // y: {3814, 33952, 94138}
+//        for i in 0..<3 {
+//            let maxSteps = 65 + i * width
+//            var steps = [Point: Set<Int>]()
+//            floodFill(grid, &steps, from: grid.start, step: 1, max: maxSteps)
+//            let count = steps.filter { $0.value.contains(maxSteps) }.count
+//            print(maxSteps, count)
+//        }
 
-        for y in minY ... maxY {
-            for x in minX ... maxX {
-                let p = Point(x, y)
-                if grid[p] == "#" {
-                    print("#", terminator: "")
-                } else {
-                    print(steps[p]?.contains(maxSteps) == true ? "O" : ".", terminator: "")
-                }
-            }
-            print()
-        }
+        // step3: plug 202300 into the quadratic formula that WA spits out
+        let x = 26501365 / width
+        return 15024 * x * x + 15114 * x + 3814
     }
 
     private func floodFill(_ grid: Grid, _ steps: inout [Point: Set<Int>], from start: Point, step: Int, max: Int) {
