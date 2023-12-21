@@ -7,16 +7,27 @@ import XCTest
 
 final class Day21Tests: XCTestCase {
     let testInput = """
+...........
+.....###.#.
+.###.##..#.
+..#.#...#..
+....#.#....
+.##..S####.
+.##..#...#.
+.......##..
+.##.#.####.
+.##..##.##.
+...........
 """
 
     func testDay21_part1() throws {
-        let day = Day21(input: testInput) 
-        XCTAssertEqual(day.part1(), 0)
+        let day = Day21(input: testInput, maxSteps: 6) 
+        XCTAssertEqual(day.part1(), 16)
     }
 
     func testDay21_part1_solution() throws {
         let day = Day21(input: Day21.input) 
-        XCTAssertEqual(day.part1(), 0)
+        XCTAssertEqual(day.part1(), 3722)
     }
 
     func testDay21_part2() throws {
