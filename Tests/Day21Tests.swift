@@ -30,6 +30,20 @@ final class Day21Tests: XCTestCase {
         XCTAssertEqual(day.part1(), 3722)
     }
 
+    func testDay21_infiniteGrid() throws {
+        var day = Day21(input: testInput, maxSteps: 10)
+        XCTAssertEqual(day.part1(), 50)
+
+        day = Day21(input: testInput, maxSteps: 50)
+        XCTAssertEqual(day.part1(), 1594)
+
+        day = Day21(input: testInput, maxSteps: 100)
+        XCTAssertEqual(day.part1(), 6536)
+        
+//        day = Day21(input: testInput, maxSteps: 500)
+//        XCTAssertEqual(day.part1(), 167004)
+    }
+
     func testDay21_part2() throws {
         let day = Day21(input: testInput)
         XCTAssertEqual(day.part2(), 0)
