@@ -28,17 +28,11 @@ private struct Brick {
               end: Point3(end.x, end.y, end.z - 1))
     }
 
-    func step(_ path: KeyPath<Point3, Int>) -> Int {
-        let s = start[keyPath: path]
-        let e = start[keyPath: path]
-        return s == e ? 1 : (e - s).signum()
-    }
-
     var volume: [Point3] {
         var vol = [Point3]()
-        for x in stride(from: start.x, through: end.x, by: step(\.x)) {
-            for y in stride(from: start.y, through: end.y, by: step(\.y)) {
-                for z in stride(from: start.z, through: end.z, by: step(\.z)) {
+        for x in stride(from: start.x, through: end.x, by: 1) {
+            for y in stride(from: start.y, through: end.y, by: 1) {
+                for z in stride(from: start.z, through: end.z, by: 1) {
                     vol.append(Point3(x, y, z))
                 }
             }
