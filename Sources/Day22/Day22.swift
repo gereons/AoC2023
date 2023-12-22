@@ -11,8 +11,8 @@ private struct Brick {
     let end: Point3
     let volume: Set<Point3>
 
-    var minZ: Int { min(start.z, end.z) }
-    var maxZ: Int { max(start.z, end.z) }
+    var minZ: Int { start.z }
+    var maxZ: Int { end.z }
 
     init(_ string: String) {
         let parts = string.components(separatedBy: "~")
@@ -48,6 +48,13 @@ private struct Brick {
     func isDirectlyBelow(_ other: Brick) -> Bool {
         self.maxZ == other.minZ - 1
     }
+
+    func isSupported(by other: Brick) -> Bool {
+        guard other.isDirectlyBelow(self) else { return false }
+        let xOverlap = (self.start.x...self.end.x).overlaps(other.start.x...other.end.x)
+        let yOverlap = (self.start.y...self.end.y).overlaps(other.start.y...other.end.y)
+        return xOverlap || yOverlap
+    }
 }
 
 final class Day22: AOCDay {
@@ -58,7 +65,55 @@ final class Day22: AOCDay {
     }
 
     func part1() -> Int {
-        // drop all bricks down as far as possible
+        let (droppedBricks, volume) = dropAll(bricks)
+
+        // find removable bricks
+        var removable = 0
+        for (index, brick) in droppedBricks.enumerated() {
+            if canRemove(brick, at: index, from: droppedBricks, volume) {
+                removable += 1
+            }
+        }
+        return removable
+    }
+
+    func part2() -> Int {
+        let (droppedBricks, volume) = dropAll(bricks)
+
+        var chainRemoved = 0
+        for (index, brick) in droppedBricks.enumerated() {
+            chainRemoved += checkChainReaction(index, brick, droppedBricks, volume)
+        }
+        return chainRemoved
+    }
+
+    private func checkChainReaction(_ index: Int, _ brick: Brick, _ bricks: [Brick], _ volume: Set<Point3>) -> Int {
+        // unconditionally remove the first brick
+        var removed = [brick]
+        var volume = volume
+        volume.subtract(brick.volume)
+
+        // does this allow any later bricks to drop?
+        var chain = 0
+        for brick in bricks.dropFirst(index + 1) {
+            let wasSupported = removed.contains { brick.isSupported(by: $0) }
+            if wasSupported && canDrop(brick, in: volume) {
+                chain += 1
+                volume.subtract(brick.volume)
+                removed.append(brick)
+            }
+        }
+
+        return chain
+    }
+
+    private func canDrop(_ brick: Brick, in volume: Set<Point3>) -> Bool {
+        let dropped = brick.dropped()
+        return volume.subtracting(brick.volume).intersection(dropped.volume).isEmpty
+    }
+
+    // drop all bricks down as far as possible
+    private func dropAll(_ bricks: [Brick]) -> ([Brick], Set<Point3>) {
         var volume = Set<Point3>()
         var droppedBricks = [Brick]()
         for brick in bricks.sorted(by: { $0.minZ < $1.minZ }) {
@@ -74,35 +129,22 @@ final class Day22: AOCDay {
             volume.formUnion(brick.volume)
             droppedBricks.append(brick)
         }
-
-        // find removable bricks
-        var removable = 0
-
-        for (index, brick) in droppedBricks.enumerated() {
-            var supportsOther = false
-            for brick2 in droppedBricks.dropFirst(index + 1) {
-                if !brick.isDirectlyBelow(brick2) {
-                    continue
-                }
-                let dropped = brick2.dropped()
-                if dropped.minZ < 1 {
-                    continue
-                }
-                let test = volume.subtracting(brick.volume).subtracting(brick2.volume)
-                if test.intersection(dropped.volume).isEmpty {
-                    supportsOther = true
-                    break
-                }
-            }
-            if !supportsOther {
-                removable += 1
-            }
-        }
-
-        return removable
+        return (droppedBricks, volume)
     }
 
-    func part2() -> Int {
-        return 0
+    private func canRemove(_ brick: Brick, at index: Int, from bricks: [Brick], _ volume: Set<Point3>) -> Bool {
+        var supportsOther = false
+        for brick2 in bricks.dropFirst(index + 1) {
+            if !brick.isDirectlyBelow(brick2) || brick2.minZ == 1 {
+                continue
+            }
+            let dropped = brick2.dropped()
+            let testVolume = volume.subtracting(brick.volume).subtracting(brick2.volume)
+            if testVolume.intersection(dropped.volume).isEmpty {
+                supportsOther = true
+                break
+            }
+        }
+        return !supportsOther
     }
 }
