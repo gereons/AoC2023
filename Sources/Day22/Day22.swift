@@ -9,18 +9,23 @@ import AoCTools
 private struct Brick {
     let start: Point3
     let end: Point3
+    let volume: Set<Point3>
+
+    var minZ: Int { min(start.z, end.z) }
+    var maxZ: Int { max(start.z, end.z) }
 
     init(_ string: String) {
         let parts = string.components(separatedBy: "~")
         let s = parts[0].allInts()
         let e = parts[1].allInts()
-        start = Point3(s[0], s[1], s[2])
-        end = Point3(e[0], e[1], e[2])
+        self.init(start: Point3(s[0], s[1], s[2]),
+                  end: Point3(e[0], e[1], e[2]))
     }
 
     init(start: Point3, end: Point3) {
         self.start = start
         self.end = end
+        volume = Self.volume(for: start, end)
     }
 
     func dropped() -> Brick {
@@ -28,7 +33,7 @@ private struct Brick {
               end: Point3(end.x, end.y, end.z - 1))
     }
 
-    var volume: [Point3] {
+    private static func volume(for start: Point3, _ end: Point3) -> Set<Point3> {
         var vol = [Point3]()
         for x in stride(from: start.x, through: end.x, by: 1) {
             for y in stride(from: start.y, through: end.y, by: 1) {
@@ -37,11 +42,8 @@ private struct Brick {
                 }
             }
         }
-        return vol
+        return Set(vol)
     }
-
-    var minZ: Int { min(start.z, end.z) }
-    var maxZ: Int { max(start.z, end.z) }
 
     func isDirectlyBelow(_ other: Brick) -> Bool {
         self.maxZ == other.minZ - 1
