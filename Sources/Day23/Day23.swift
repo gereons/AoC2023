@@ -8,83 +8,138 @@ import AoCTools
 // paths (.), forest (#), and steep slopes (^, >, v, and <).
 private enum Tile: Equatable {
     case path
-    case forest
     case slope(Direction)
 
-    init(_ ch: Character) {
+    var isSlope: Bool {
+        switch self {
+        case .path: return false
+        case .slope: return true
+        }
+    }
+
+    init?(_ ch: Character) {
         switch ch {
         case ".": self = .path
-        case "#": self = .forest
         case "^": self = .slope(.n)
         case "<": self = .slope(.w)
         case ">": self = .slope(.e)
         case "v": self = .slope(.s)
-        default: fatalError()
+        default: return nil
         }
     }
 }
 
 final class Day23: AOCDay {
-    private let maze: [[Tile]]
+    private let maze: [Point: Tile]
     private let start: Point
     private let end: Point
 
     init(input: String) {
-        maze = input.lines.map { $0.map { Tile($0) } }
-        let startX = maze[0].firstIndex { $0 == .path }!
-        start = Point(startX, 0)
-        let endX = maze[maze.count - 1].firstIndex { $0 == .path }!
-        end = Point(endX, maze.count - 1)
+        let lines = input.lines
+        let points = lines.enumerated().flatMap { y, line in
+            line.enumerated().compactMap { x, ch in
+                if let tile = Tile(ch) {
+                    return (Point(x, y), tile)
+                } else {
+                    return nil
+                }
+            }
+        }
+        maze = Dictionary(uniqueKeysWithValues: points)
+        start = maze.keys.first { $0.y == 0 }!
+        end = maze.keys.first { $0.y == lines.count - 1}!
     }
 
     func part1() -> Int {
-        findLongestPath(canClimb: false)
+        longestPath(from: start, to: end)
     }
 
     func part2() -> Int {
-        findLongestPath(canClimb: true)
+        // pre-compute junctions and all paths between them
+        let junctions = junctions()
+        let paths = pathsBetween(junctions)
+
+        return longestPath(from: start, to: end, seen: [start], paths: paths)
     }
 
-    private func findLongestPath(canClimb: Bool) -> Int {
-        var pathLengths = [Int]()
-        dfs(from: start, to: end, canClimb: canClimb, [], [], &pathLengths)
+    // MARK: - part 1
+    private func longestPath(from start: Point, to end: Point) -> Int {
+        var queue = [(last: start, path: Set([start]))]
+        var maxLength = 0
+        while let (last, path) = queue.popLast() {
+            if last == end {
+                maxLength = max(maxLength, path.count - 1)
+            }
 
-        return pathLengths.max()!
-    }
-
-    private func dfs(from start: Point, to end: Point, canClimb: Bool, _ visited: Set<Point>, _ currentPath: [Point], _ pathLengths: inout [Int]) {
-        if start == end {
-            let pathLength = currentPath.count
-            pathLengths.append(pathLength)
-            return
+            for n in neighbors(of: last) {
+                if !path.contains(n) {
+                    queue.append((n, path + [n]))
+                }
+            }
         }
-
-        var visited = visited
-        var currentPath = currentPath
-        visited.insert(start)
-        for n in neighbors(of: start, canClimb: canClimb) {
-            if visited.contains(n) { continue }
-            currentPath.append(n)
-            dfs(from: n, to: end, canClimb: canClimb, visited, currentPath, &pathLengths)
-            currentPath.removeLast()
-        }
-        visited.remove(start)
+        return maxLength
     }
 
-    private func neighbors(of point: Point, canClimb: Bool) -> [Point] {
+    private func neighbors(of point: Point) -> [Point] {
         var neighbors = [Point]()
-        for direction in [Direction.n, .s, .e, .w] {
+        for direction in Direction.orthogonal {
             let np = point.moved(to: direction)
-            if np.x < 0 || np.x >= maze[0].count || np.y < 0 || np.y >= maze.count { continue }
-            switch maze[np.y][np.x] {
-            case .path: neighbors.append(np)
-            case .forest: continue
-            case .slope(let slopeDir):
-                if canClimb || slopeDir == direction {
+            switch maze[np] {
+            case .none: 
+                continue
+            case .path: 
+                neighbors.append(np)
+            case .slope(let slopeDirection):
+                if slopeDirection == direction {
                     neighbors.append(np)
                 }
             }
         }
         return neighbors
+    }
+
+    // MARK: - part 2
+    private func longestPath(from start: Point, to end: Point, seen: Set<Point>, paths: [Point: [(Point, Int)]]) -> Int {
+        if start == end {
+            return 0
+        }
+
+        var longest = 0
+        for (point, length) in paths[start]! {
+            if seen.contains(point) { continue }
+            let best = longestPath(from: point, to: end, seen: seen + [point], paths: paths)
+            longest = max(longest, best + length)
+        }
+        return longest
+    }
+
+    private func junctions() -> Set<Point> {
+        var junctions = [start, end]
+        for (point, tile) in maze {
+            if tile != .path { continue }
+            let nSlopes = point.neighbors().count { maze[$0]?.isSlope == true }
+            if nSlopes > 1 {
+                junctions.append(point)
+            }
+        }
+        return Set(junctions)
+    }
+
+    private func pathsBetween(_ junctions: Set<Point>) -> [Point: [(Point, Int)]] {
+        var paths = [Point: [(Point, Int)]]() // from -> (to, length)
+        for junction in junctions {
+            for neighbor in junction.neighbors().filter({ maze[$0] != nil }) {
+                var current = neighbor
+                var path = Set([junction])
+                repeat {
+                    path.insert(current)
+                    let next = current.neighbors().filter { maze[$0] != nil && !path.contains($0) }
+                    if next.isEmpty { continue }
+                    current = next[0]
+                } while !junctions.contains(current)
+                paths[junction, default: []].append((current, path.count))
+            }
+        }
+        return paths
     }
 }
