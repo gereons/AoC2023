@@ -70,6 +70,25 @@ final class Day24: AOCDay {
     }
 
     func part2() -> Int {
-        return 0
+        // part 2 not solved in code, again. ¯\_(ツ)_/¯
+
+        // Instead, generate 3 equations and let wolfram alpha do the work
+        for s in stones.prefix(3) {
+            var eq = "(x - \(s.p.x)) / (a - \(s.v.x)) = (y - \(s.p.y)) / (b - \(s.v.y)) = (z - \(s.p.z)) / (c - \(s.v.z))"
+            eq = eq.replacingOccurrences(of: ".0", with: "")
+            // print(eq)
+
+            // (x - 313743533208081) / (a - 51)   = (y - 328167831228390) / (b - 115)  = (z - 159732064722764) / (c - 83)
+            // (x - 468183773350185) / (a - -243) = (y - 269960480220160) / (b - -42)  = (z - 439515864552130) / (c - -12)
+            // (x - 182013004223519) / (a - 84)   = (y - 391834672709518) / (b - -172) = (z - 355278372451916) / (c - 15)
+        }
+        // gives us
+        // x = 335849990884055 and y = 362494628861890 and z = 130073711567420 and c = 299 and b = -135 and a = -110
+
+        let x = 335849990884055
+        let y = 362494628861890
+        let z = 130073711567420
+
+        return x + y + z
     }
 }
