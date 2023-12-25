@@ -26,6 +26,6 @@ final class Day24Tests: XCTestCase {
 
     func testDay24_part2_solution() throws {
         let day = Day24(input: Day24.input) 
-        XCTAssertEqual(day.part2(), 0)
+        XCTAssertEqual(day.part2(), 828418331313365)
     }
 }
