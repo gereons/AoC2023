@@ -7,14 +7,14 @@ on:
     branches: [ "main" ]
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_15.1.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_16.0.app/Contents/Developer
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
     - uses: actions/checkout@v4
     - name: Build
       run: swift build
-#    - name: Test
-#      run: swift test --filter "AoCTests.Day.*/testDay.*part.\$"
+    - name: Test
+      run: swift test --filter "AoCTests.Day.*/testDay.*part[12]\$"
