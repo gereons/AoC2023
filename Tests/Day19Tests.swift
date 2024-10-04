@@ -5,6 +5,7 @@
 import XCTest
 @testable import AdventOfCode
 
+@MainActor
 final class Day19Tests: XCTestCase {
     let testInput = """
 px{a<2006:qkq,m>2090:A,rfg}

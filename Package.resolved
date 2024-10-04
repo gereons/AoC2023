@@ -1,12 +1,40 @@
 {
+  "originHash" : "491a32c3af53ada53c6e874e2a142c02f10d9d27fc923e31fb6e1fee3b5726b8",
   "pins" : [
     {
       "identity" : "aoctools",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gereons/AoCTools",
       "state" : {
-        "revision" : "19b8a7f6845c9fc89d26c52f09a14f1d7f46b81a",
-        "version" : "0.0.45"
+        "revision" : "d7971984089e4724cee928895176db6e81939491",
+        "version" : "0.1.0"
+      }
+    },
+    {
+      "identity" : "swift-algorithms",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-algorithms",
+      "state" : {
+        "revision" : "f6919dfc309e7f1b56224378b11e28bab5bccc42",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version" : "1.1.4"
+      }
+    },
+    {
+      "identity" : "swift-numerics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-numerics.git",
+      "state" : {
+        "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
+        "version" : "1.0.2"
       }
     },
     {
@@ -14,10 +42,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lukepistrol/SwiftLintPlugin",
       "state" : {
-        "revision" : "ea6d3ca895b49910f790e98e4b4ca658e0fe490e",
-        "version" : "0.54.0"
+        "revision" : "bea71d23db993c58934ee704f798a66d7b8cb626",
+        "version" : "0.57.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

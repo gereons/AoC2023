@@ -5,6 +5,7 @@
 //
 
 import AoCTools
+import Algorithms
 
 private struct Almanac {
     let seeds: [Int]
@@ -78,8 +79,8 @@ final class Day05: AOCDay {
 
     func part2() -> Int {
         var ranges = almanac.seeds
-            .chunked(2)
-            .compactMap { Range(from: $0[0], to: $0[0] + $0[1] - 1) }
+            .chunks(ofCount: 2)
+            .map { Range(from: $0.first!, to: $0.first! + $0.last! - 1) }
 
         for map in almanac.maps {
             var newRanges = [Range]()
@@ -115,8 +116,8 @@ final class Day05: AOCDay {
 
     func part2_bruteForce() -> Int {
         let seedRanges = almanac.seeds
-            .chunked(2)
-            .map { $0[0] ..< $0[0]+$0[1] }
+            .chunks(ofCount: 2)
+            .map { $0.first! ..< $0.first! + $0.last! }
 
         var minLocation = Int.max
         for range in seedRanges {

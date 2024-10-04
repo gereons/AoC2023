@@ -6,6 +6,7 @@ import AoCTools
 import Foundation
 
 @main
+@MainActor
 struct AdventOfCode {
     // assign to eg `.day(1)`, leave as nil to run the puzzle for the current calendar day
     static var defaultDay: Day? // = .day(1)

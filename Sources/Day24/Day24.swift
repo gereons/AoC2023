@@ -39,7 +39,7 @@ final class Day24: AOCDay {
     func part1() -> Int {
         // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
         var total = 0
-        for pair in stones.combinations(of: 2) {
+        for pair in stones.combinations(ofCount: 2) {
             let s1 = pair[0]
             let s2 = pair[1]
             let (slope1, intercept1) = slopeIntercept(for: s1)

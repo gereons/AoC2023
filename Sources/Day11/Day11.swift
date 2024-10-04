@@ -33,7 +33,7 @@ final class Day11: AOCDay {
         let galaxies = expand(galaxies, growth: growth)
 
         return galaxies
-            .combinations(of: 2)
+            .combinations(ofCount: 2)
             .map { pair in
                 pair[0].distance(to: pair[1])
             }
