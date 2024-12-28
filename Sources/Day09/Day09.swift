@@ -10,7 +10,7 @@ final class Day09: AOCDay {
     let sequences: [[Int]]
 
     init(input: String) {
-        sequences = input.lines.map { $0.allInts() }
+        sequences = input.lines.map { $0.integers() }
     }
 
     func part1() -> Int {

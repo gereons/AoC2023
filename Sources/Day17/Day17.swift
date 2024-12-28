@@ -27,7 +27,7 @@ private struct City: Pathfinding {
         self.chainRange = chainRange
     }
 
-    func neighbors(for state: State) -> [State] {
+    func neighbors(of state: State) -> [State] {
         var result = [State]()
         for dir in Direction.orthogonal {
             if let direction = state.direction {

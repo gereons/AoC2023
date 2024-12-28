@@ -13,7 +13,7 @@ private struct Almanac {
     let maps: [Map]
 
     init(_ lines: [String]) {
-        seeds = lines[0].allInts()
+        seeds = lines[0].integers()
         let chunks = Array(lines.dropFirst(2)).grouped { $0.isEmpty }
 
         maps = chunks.map { Map($0) }
@@ -50,7 +50,7 @@ private struct Range {
     }
 
     init(_ string: String) {
-        let ints = string.allInts()
+        let ints = string.integers()
         self.init(from: ints[1], to: ints[1] + ints[2] - 1, adjustment: ints[0] - ints[1])
     }
 

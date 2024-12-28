@@ -16,8 +16,8 @@ private struct Stone {
     // 19, 13, 30 @ -2,  1, -2
     init(_ string: String) {
         let parts = string.components(separatedBy: "@")
-        let pos = parts[0].allInts().map { Double($0) }
-        let vel = parts[1].allInts().map { Double($0) }
+        let pos = parts[0].integers().map { Double($0) }
+        let vel = parts[1].integers().map { Double($0) }
         p = (pos[0], pos[1], pos[2])
         v = (vel[0], vel[1], vel[2])
     }

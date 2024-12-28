@@ -41,13 +41,13 @@ final class Day06: AOCDay {
     init(input: String) {
         let lines = input.lines
 
-        let times = lines[0].allInts()
-        let distances = lines[1].allInts()
+        let times = lines[0].integers()
+        let distances = lines[1].integers()
 
         races = zip(times, distances).map { Race(time: $0, distance: $1) }
 
-        let totalTime = lines[0].replacingOccurrences(of: " ", with: "").allInts()[0]
-        let totalDistance = lines[1].replacingOccurrences(of: " ", with: "").allInts()[0]
+        let totalTime = lines[0].replacingOccurrences(of: " ", with: "").integers()[0]
+        let totalDistance = lines[1].replacingOccurrences(of: " ", with: "").integers()[0]
         part2Race = Race(time: totalTime, distance: totalDistance)
     }
 

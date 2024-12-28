@@ -13,7 +13,7 @@ private struct Row: Hashable {
     init(_ string: String) {
         let parts = string.components(separatedBy: " ")
         record = parts[0]
-        groups = parts[1].allInts()
+        groups = parts[1].integers()
     }
 
     init<S: StringProtocol>(record: S, groups: [Int]) {
@@ -100,7 +100,7 @@ final class Day12: AOCDay {
             return row.groups.count == 1 ? 1 : 0
         }
 
-        if "?.".contains(row.record.charAt(group)) {
+        if "?.".contains(row.record[group]) {
             return arrangements(Row(record: row.record.dropFirst(group + 1),
                                     groups: Array(row.groups.dropFirst())))
         }

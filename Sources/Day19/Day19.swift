@@ -39,7 +39,7 @@ private struct Rule {
     let value: Int
     let result: String
 
-    enum Comp: String {
+    enum Comp: Character {
         case lt = "<"
         case gt = ">"
     }
@@ -53,8 +53,8 @@ private struct Rule {
             value = 0
             result = parts[0]
         } else {
-            property = parts[0].charAt(0)
-            comparison = Comp(rawValue: parts[0].charAt(1))!
+            property = String(parts[0][0])
+            comparison = Comp(rawValue: parts[0][1])!
             value = Int(parts[0].dropFirst(2))!
             result = parts[1]
         }
@@ -87,7 +87,7 @@ private struct Part {
 
     // {x=787,m=2655,a=1222,s=2876}
     init(_ string: String) {
-        let ints = string.allInts()
+        let ints = string.integers()
         x = ints[0]
         m = ints[1]
         a = ints[2]

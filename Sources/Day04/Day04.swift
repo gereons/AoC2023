@@ -13,10 +13,10 @@ private struct Card {
     init(_ string: String) {
         // Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
         let parts = string.components(separatedBy: ":")
-        self.id = parts[0].allInts().first!
+        self.id = parts[0].integers().first!
         let nums = parts[1].components(separatedBy: "|")
-        let winners = Set(nums[0].allInts())
-        let numbers = Set(nums[1].allInts())
+        let winners = Set(nums[0].integers())
+        let numbers = Set(nums[1].integers())
         matches = numbers.intersection(winners).count
     }
 

@@ -16,8 +16,8 @@ private struct Brick {
 
     init(_ string: String) {
         let parts = string.components(separatedBy: "~")
-        let s = parts[0].allInts()
-        let e = parts[1].allInts()
+        let s = parts[0].integers()
+        let e = parts[1].integers()
         self.init(start: Point3(s[0], s[1], s[2]),
                   end: Point3(e[0], e[1], e[2]))
     }
