@@ -5,7 +5,6 @@
 import XCTest
 @testable import AdventOfCode
 
-@MainActor
 final class Day07Tests: XCTestCase {
     let testInput = """
 32T3K 765

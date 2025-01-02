@@ -5,7 +5,6 @@
 import XCTest
 @testable import AdventOfCode
 
-@MainActor
 final class Day05Tests: XCTestCase {
     let testInput = """
 seeds: 79 14 55 13
