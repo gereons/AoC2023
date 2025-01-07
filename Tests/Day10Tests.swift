@@ -2,10 +2,10 @@
 // Advent of Code 2023 Day 10 Tests
 //
 
-import XCTest
+import Testing
 @testable import AdventOfCode
 
-final class Day10Tests: XCTestCase {
+@Suite struct Day10Tests {
     let testInput1a = """
 -L|F7
 7S-7|
@@ -71,35 +71,35 @@ L.L7LFJ|||||FJL7||LJ
 L7JLJL-JLJLJL--JLJ.L
 """
 
-    func testDay10_part1() throws {
+    @Test func testDay10_part1() throws {
         let day1a = Day10(input: testInput1a)
-        XCTAssertEqual(day1a.part1(), 4)
+        #expect(day1a.part1() == 4)
 
         let day1b = Day10(input: testInput1b)
-        XCTAssertEqual(day1b.part1(), 8)
+        #expect(day1b.part1() == 8)
     }
 
-    func testDay10_part1_solution() throws {
+    @Test func testDay10_part1_solution() throws {
         let day = Day10(input: Day10.input) 
-        XCTAssertEqual(day.part1(), 6838)
+        #expect(day.part1() == 6838)
     }
 
-    func testDay10_part2() throws {
+    @Test func testDay10_part2() throws {
         let day2a = Day10(input: testInput2a)
-        XCTAssertEqual(day2a.part2(), 4)
+        #expect(day2a.part2() == 4)
 
         let day2b = Day10(input: testInput2b)
-        XCTAssertEqual(day2b.part2(), 4)
+        #expect(day2b.part2() == 4)
 
         let day2c = Day10(input: testInput2c)
-        XCTAssertEqual(day2c.part2(), 8)
+        #expect(day2c.part2() == 8)
 
         let day2d = Day10(input: testInput2d)
-        XCTAssertEqual(day2d.part2(), 10)
+        #expect(day2d.part2() == 10)
     }
 
-    func testDay10_part2_solution() throws {
+    @Test func testDay10_part2_solution() throws {
         let day = Day10(input: Day10.input) 
-        XCTAssertEqual(day.part2(), 451)
+        #expect(day.part2() == 451)
     }
 }

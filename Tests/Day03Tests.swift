@@ -2,10 +2,10 @@
 // Advent of Code 2023 Day 3 Tests
 //
 
-import XCTest
+import Testing
 @testable import AdventOfCode
 
-final class Day03Tests: XCTestCase {
+@Suite struct Day03Tests {
     let testInput = """
 467..114..
 ...*......
@@ -19,23 +19,23 @@ final class Day03Tests: XCTestCase {
 .664.598..
 """
 
-    func testDay03_part1() throws {
+    @Test func testDay03_part1() throws {
         let day = Day03(input: testInput) 
-        XCTAssertEqual(day.part1(), 4361)
+        #expect(day.part1() == 4361)
     }
 
-    func testDay03_part1_solution() throws {
+    @Test func testDay03_part1_solution() throws {
         let day = Day03(input: Day03.input) 
-        XCTAssertEqual(day.part1(), 557705)
+        #expect(day.part1() == 557705)
     }
 
-    func testDay03_part2() throws {
+    @Test func testDay03_part2() throws {
         let day = Day03(input: testInput)
-        XCTAssertEqual(day.part2(), 467835)
+        #expect(day.part2() == 467835)
     }
 
-    func testDay03_part2_solution() throws {
+    @Test func testDay03_part2_solution() throws {
         let day = Day03(input: Day03.input) 
-        XCTAssertEqual(day.part2(), 84266818)
+        #expect(day.part2() == 84266818)
     }
 }

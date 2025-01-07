@@ -17,4 +17,4 @@ jobs:
     - name: Build
       run: swift build
     - name: Test
-      run: swift test --filter "AoCTests.Day.*/testDay.*part[12]\$"
+      run: swift test --filter "AoCTests.Day.*Tests/testDay.*_part[12]\(\)"

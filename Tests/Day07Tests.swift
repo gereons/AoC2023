@@ -2,10 +2,10 @@
 // Advent of Code 2023 Day 7 Tests
 //
 
-import XCTest
+import Testing
 @testable import AdventOfCode
 
-final class Day07Tests: XCTestCase {
+@Suite struct Day07Tests {
     let testInput = """
 32T3K 765
 T55J5 684
@@ -14,23 +14,23 @@ KTJJT 220
 QQQJA 483
 """
 
-    func testDay07_part1() throws {
+    @Test func testDay07_part1() throws {
         let day = Day07(input: testInput)
-        XCTAssertEqual(day.part1(), 6440)
+        #expect(day.part1() == 6440)
     }
 
-    func testDay07_part1_solution() throws {
+    @Test func testDay07_part1_solution() throws {
         let day = Day07(input: Day07.input)
-        XCTAssertEqual(day.part1(), 250898830)
+        #expect(day.part1() == 250898830)
     }
 
-    func testDay07_part2() throws {
+    @Test func testDay07_part2() throws {
         let day = Day07(input: testInput)
-        XCTAssertEqual(day.part2(), 5905)
+        #expect(day.part2() == 5905)
     }
 
-    func testDay07_part2_solution() throws {
+    @Test func testDay07_part2_solution() throws {
         let day = Day07(input: Day07.input)
-        XCTAssertEqual(day.part2(), 252127335)
+        #expect(day.part2() == 252127335)
     }
 }

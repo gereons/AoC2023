@@ -2,10 +2,10 @@
 // Advent of Code 2023 Day 11 Tests
 //
 
-import XCTest
+import Testing
 @testable import AdventOfCode
 
-final class Day11Tests: XCTestCase {
+@Suite struct Day11Tests {
     let testInput = """
 ...#......
 .......#..
@@ -19,25 +19,25 @@ final class Day11Tests: XCTestCase {
 #...#.....
 """
 
-    func testDay11_part1() throws {
+    @Test func testDay11_part1() throws {
         let day = Day11(input: testInput) 
-        XCTAssertEqual(day.part1(), 374)
+        #expect(day.part1() == 374)
     }
 
-    func testDay11_part1_solution() throws {
+    @Test func testDay11_part1_solution() throws {
         let day = Day11(input: Day11.input) 
-        XCTAssertEqual(day.part1(), 9233514)
+        #expect(day.part1() == 9233514)
     }
 
-    func testDay11_part2() throws {
+    @Test func testDay11_part2() throws {
         let day = Day11(input: testInput)
-        XCTAssertEqual(day.distanceSum(day.galaxies, growth: 10), 1030)
-        XCTAssertEqual(day.distanceSum(day.galaxies, growth: 100), 8410)
-        XCTAssertEqual(day.part2(), 82000210)
+        #expect(day.distanceSum(day.galaxies, growth: 10) == 1030)
+        #expect(day.distanceSum(day.galaxies, growth: 100) == 8410)
+        #expect(day.part2() == 82000210)
     }
 
-    func testDay11_part2_solution() throws {
+    @Test func testDay11_part2_solution() throws {
         let day = Day11(input: Day11.input) 
-        XCTAssertEqual(day.part2(), 363293506944)
+        #expect(day.part2() == 363293506944)
     }
 }
