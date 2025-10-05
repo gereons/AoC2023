@@ -20,7 +20,7 @@ private enum Rank: Int, Comparable {
     }
 }
 
-private class Hand {
+private final class Hand: @unchecked Sendable {
     let cards: [Character]
     let bid: Int
 

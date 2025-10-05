@@ -20,7 +20,7 @@ private struct Message: CustomStringConvertible {
     }
 }
 
-private class CommunicationsModule {
+private class CommunicationsModule: @unchecked Sendable {
     let name: String
     let destinations: [String]
 
@@ -51,7 +51,7 @@ private class CommunicationsModule {
     }
 }
 
-private final class Flipflop: CommunicationsModule {
+private final class Flipflop: CommunicationsModule, @unchecked Sendable {
     private var state: Bool = false
 
     override func reset() {
@@ -68,7 +68,7 @@ private final class Flipflop: CommunicationsModule {
     }
 }
 
-private final class Conjunction: CommunicationsModule {
+private final class Conjunction: CommunicationsModule, @unchecked Sendable {
     private var inputs = [String: Pulse]()
     private(set) var triggered = false
 
@@ -96,13 +96,13 @@ private final class Conjunction: CommunicationsModule {
     }
 }
 
-private final class Broadcaster: CommunicationsModule {
+private final class Broadcaster: CommunicationsModule, @unchecked Sendable {
     override func receive(_ pulse: Pulse, from name: String) -> [Message] {
         send(pulse)
     }
 }
 
-private final class Output: CommunicationsModule {
+private final class Output: CommunicationsModule, @unchecked Sendable {
     // drop all input pulses
 }
 

@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.2
 
 import PackageDescription
 
@@ -6,7 +6,7 @@ let package = Package(
     name: "AdventOfCode",
     platforms: [ .macOS(.v15) ],
     dependencies: [
-        .package(url: "https://github.com/gereons/AoCTools", from: "0.1.7"),
+        .package(url: "https://github.com/gereons/AoCTools", from: "0.1.9"),
         // .package(path: "../AoCTools"),
     ],
     targets: [

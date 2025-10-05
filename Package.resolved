@@ -1,13 +1,13 @@
 {
-  "originHash" : "eb2a557cdbfedc2dcfdf31ab358b5d8840651b725f95588c23af3f3c0a9bc975",
+  "originHash" : "03bc058d8c8423f98e6b394bdddf683633600f46cd6662d3d5e8a7d7fdc32410",
   "pins" : [
     {
       "identity" : "aoctools",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gereons/AoCTools",
       "state" : {
-        "revision" : "a84caf6b4974595bf255b906915767977ed731cb",
-        "version" : "0.1.7"
+        "revision" : "8f13975e6d5fc8b04a26297f2d607fc8cb2d773f",
+        "version" : "0.1.9"
       }
     },
     {

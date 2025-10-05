@@ -28,7 +28,7 @@ private struct Row: Hashable {
     }
 }
 
-final class Day12: AdventOfCodeDay {
+final class Day12: AdventOfCodeDay, @unchecked Sendable {
     let title = "Hot Springs"
     
     private let rows: [Row]
